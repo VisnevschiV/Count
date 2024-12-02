@@ -1,0 +1,67 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_ProjectAssets/UI/InGame.uss?fileID=7433441132597879392&amp;guid=ba7ff38cf0ec54d71bff08bdf6fdbb20&amp;type=3#InGame" />
+    <engine:VisualElement name="root" class="violet" style="flex-grow: 1;">
+        <engine:VisualElement name="top" style="flex-grow: 1; flex-direction: row; align-items: flex-start; justify-content: space-around; padding-top: 121px;">
+            <engine:Label text="Lvl1" name="lvl" class="white" />
+        </engine:VisualElement>
+        <engine:VisualElement name="mid" style="flex-grow: 1; align-items: center; justify-content: space-around;">
+            <engine:VisualElement name="playArea">
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+                <engine:VisualElement class="button">
+                    <engine:Label name="Label" enable-rich-text="false" class="nrLabel" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="bot" style="flex-grow: 1; flex-direction: row-reverse; justify-content: center; align-items: center;">
+            <engine:Button enable-rich-text="false" name="restart" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/reload.png?fileID=2800000&amp;guid=58a00eb8ad15f41ae991ab60af79a623&amp;type=3#reload&quot;); background-size: 70% 70%; background-position-x: center 0; background-position-y: center 0;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+    <engine:VisualElement name="popUp" style="flex-grow: 1; display: none;">
+        <engine:Label text="WIN" enable-rich-text="false" class="titleText white" />
+        <engine:Button text="Next" style="background-color: rgb(97, 231, 134); width: 413px; height: 136px; margin-top: 154px; margin-right: 154px; margin-bottom: 154px; margin-left: 154px; border-top-left-radius: 45px; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 45px; font-size: 65px; -unity-font-style: bold;" />
+    </engine:VisualElement>
+</engine:UXML>

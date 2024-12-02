@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 142eaad67105749469479308179084b0, type: 3}
+  m_Name: TutorialData
+  m_EditorClassIdentifier: 
+  tutorialElements:
+  - text: When you press on any cell you will place there a number that will increase
+      each time
+    sprite: {fileID: 7725792070342670684, guid: 2b3eb5b28e26f47c1a3db36ac86e892f, type: 3}
+  - text: your goal is to place you numbers so that it will respect the requirement
+    sprite: {fileID: 4753089809440867359, guid: c85f78d14cab24e6bad7a9a2b77ad612, type: 3}
+  - text: then get untill the last required number
+    sprite: {fileID: 2621099429136248337, guid: cb6f47f0a4f874372bac578b4061af45, type: 3}
+  - text: and win the level to go further
+    sprite: {fileID: -8743378051340770716, guid: 370201036278d4c3aa45500e1fcd2708, type: 3}

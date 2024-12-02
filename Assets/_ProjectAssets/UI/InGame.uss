@@ -1,0 +1,111 @@
+VisualElement {
+}
+
+#mid {
+    height: 40%;
+}
+
+.button {
+    background-color: rgba(151, 146, 227, 0.91);
+    align-items: center;
+    justify-content: space-around;
+    width: 25%;
+    height: 24%;
+    border-top-left-radius: 26px;
+    border-top-right-radius: 26px;
+    border-bottom-right-radius: 26px;
+    border-bottom-left-radius: 26px;
+    color: rgb(72, 67, 92);
+    text-shadow: 10px 10px 5px rgba(90, 87, 102, 0.94);
+}
+
+#playArea {
+    width: 1000px;
+    height: 1000px;
+    justify-content: space-evenly;
+    align-content: stretch;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.nrLabel {
+    font-size: 100px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    text-shadow: 8px 8px 27px rgba(0, 0, 0, 0.82);
+    transition-property: font-size;
+    transition-timing-function: ease-out-bounce;
+    transition-duration: 0.5s;
+}
+
+#bot > Button {
+    width: 200px;
+    height: 200px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    background-color: rgba(111, 101, 101, 0.89);
+    background-image: url("project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=8228938214290033325&guid=18e088599eef64a6b90126f9890e897f&type=3#console.erroricon");
+    justify-content: space-around;
+    align-items: center;
+}
+
+.confirmedNr {
+    color: rgb(237, 255, 236);
+    font-size: 159px;
+}
+
+.indigo {
+    color: rgb(151, 146, 227);
+}
+
+.violet {
+    color: rgb(72, 67, 92);
+    background-color: rgb(72, 67, 92);
+}
+
+.gray {
+    color: rgb(90, 87, 102);
+    background-color: rgb(90, 87, 102);
+}
+
+.green {
+    color: rgb(97, 231, 134);
+}
+
+.white {
+    color: rgb(237, 255, 236);
+}
+
+#popUp {
+    position: absolute;
+    background-color: rgba(90, 87, 102, 0.93);
+    width: 80%;
+    height: 30%;
+    top: 30%;
+    left: 10%;
+    right: auto;
+    bottom: auto;
+    border-top-left-radius: 100px;
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+    border-bottom-left-radius: 100px;
+    align-items: center;
+}
+
+.titleText {
+    font-size: 270px;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+}
+
+#lvl {
+    font-size: 89px;
+    -unity-font-style: bold;
+    -unity-text-align: upper-center;
+}
+
+.requiredNr {
+}

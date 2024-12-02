@@ -1,0 +1,45 @@
+.mainMenuButton {
+    width: 400px;
+    height: 200px;
+}
+
+#logoWrapper {
+    height: 22px;
+    width: 102%;
+    background-color: rgba(0, 0, 0, 0);
+    align-items: center;
+}
+
+#buttonWrapper {
+    justify-content: center;
+    align-items: center;
+}
+
+Button {
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    height: 175px;
+    font-size: 75px;
+    -unity-font-style: bold;
+    background-color: rgb(97, 231, 134);
+    border-top-left-radius: 41px;
+    border-top-right-radius: 41px;
+    border-bottom-right-radius: 41px;
+    border-bottom-left-radius: 41px;
+    text-shadow: 10px 10px 5.5px rgba(0, 0, 0, 0.28);
+    margin-top: 22px;
+    margin-right: 22px;
+    margin-bottom: 22px;
+    margin-left: 22px;
+}
+
+#tutorialWindow {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    flex-grow: 1;
+}

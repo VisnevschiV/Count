@@ -1,0 +1,8 @@
+D:/unityProj/Count/.utmp/RelWithDebInfo/1s4v2473/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/unityProj/Count/.utmp/RelWithDebInfo/1s4v2473/arm64-v8a/CMakeFiles/rebuild_cache.dir
+D:/unityProj/Count/.utmp/RelWithDebInfo/1s4v2473/arm64-v8a/GameActivity/CMakeFiles/game.dir
+D:/unityProj/Count/.utmp/RelWithDebInfo/1s4v2473/arm64-v8a/GameActivity/CMakeFiles/edit_cache.dir
+D:/unityProj/Count/.utmp/RelWithDebInfo/1s4v2473/arm64-v8a/GameActivity/CMakeFiles/rebuild_cache.dir
+D:/unityProj/Count/.utmp/RelWithDebInfo/1s4v2473/arm64-v8a/FramePacing/CMakeFiles/swappywrapper.dir
+D:/unityProj/Count/.utmp/RelWithDebInfo/1s4v2473/arm64-v8a/FramePacing/CMakeFiles/edit_cache.dir
+D:/unityProj/Count/.utmp/RelWithDebInfo/1s4v2473/arm64-v8a/FramePacing/CMakeFiles/rebuild_cache.dir

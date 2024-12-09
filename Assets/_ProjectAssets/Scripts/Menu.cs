@@ -9,6 +9,7 @@ public class Menu : MonoBehaviour
     public UIDocument uiDocument;
     public GameObject game;
     public TutorialData tutorialData;
+    public AudioSource click;
 
     private VisualElement _tutorialWindow;
     private int _tutorialStep;
@@ -26,9 +27,16 @@ public class Menu : MonoBehaviour
         rootVisualElement.Q<Button>("Play").clicked += Play;
         rootVisualElement.Q<Button>("HowTo").clicked += ActivateTutorial;
         rootVisualElement.Q<Button>("Next").clicked += TutorialNext;
+        rootVisualElement.Q<Button>("Play").clicked += PlayClick;
+        rootVisualElement.Q<Button>("HowTo").clicked += PlayClick;
+        rootVisualElement.Q<Button>("Next").clicked += PlayClick;
         _tutorialWindow = rootVisualElement.Q<VisualElement>("tutorialWindow");
     }
 
+    private void PlayClick()
+    {
+        click.Play();
+    }
 
     private void Play(){
         game.SetActive(true);

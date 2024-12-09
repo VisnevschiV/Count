@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,20 +7,22 @@ public class BoardManager : MonoBehaviour
 {
     // Reference to the UIDocument (which contains the UI elements)
     public UIDocument uiDocument;
-
-    public int boardSize=4;
+    public AudioSource click;
+    public AudioSource win;
+    public AudioSource music;
+    private int boardSize=3;
 
     private VisualElement rootVisualElement;
     private Label lvlLabel;
     private int lvl = 1;
     private VisualElement _winPopUp;
-    private int numberToBePlaced = 1;
     private int finalNr = 1000;
     private VisualElement playArea;
     private VisualElement[,] board;
     private Vector2 _lastClicked = new Vector2(-1, -1);
+    private  Stack<Vector2> _numberPositions = new Stack<Vector2>();
 
-     private void OnEnable() {
+    private void OnEnable() {
         
         // Ensure the UIDocument is assigned
         if (uiDocument == null)
@@ -37,6 +39,10 @@ public class BoardManager : MonoBehaviour
         _winPopUp = rootVisualElement.Q<VisualElement>("popUp");
         _winPopUp.Q<Button>().clicked +=StartNewGame;
         rootVisualElement.Query<Button>("restart").First().clicked += StartNewGame;
+        rootVisualElement.Query<Button>("clear").First().clicked += Clear;
+        rootVisualElement.Query<Button>("music").First().clicked += TogleMusic;
+        rootVisualElement.Query<Button>("sound").First().clicked += TogleAudio;
+        
         playArea = rootVisualElement.Q<VisualElement>("playArea");
 
         StartNewGame();
@@ -45,66 +51,82 @@ public class BoardManager : MonoBehaviour
     // Method to handle button click events
     private void OnButtonClick(VisualElement button)
     {
+        PlayClick();
         Vector2 pressed = GetIndexOf(board, button);
-
+        int numberToBePlaced = _numberPositions.Count + 1;
         Label txt = button.Q<Label>();
         string labelText = txt.text;
 
         // Check if the text is a valid integer
         bool placeHasANumber = int.TryParse(labelText, out int placeNumber);
-        bool isInitialHit = _lastClicked == new Vector2(-1, -1);
-        bool isAdjacent = Mathf.Abs(_lastClicked.x - pressed.x) == 1 && _lastClicked.y == pressed.y || 
-                            _lastClicked.x == pressed.x && Mathf.Abs(_lastClicked.y - pressed.y) == 1;
+        bool isInitialHit = _numberPositions.Count == 0;
+        Vector2 lastClicked = isInitialHit ? new Vector2(-1, -1) : _numberPositions.Peek();
 
-
-        // Proceed with logic if the text is a valid integer or if the text is empty
-        if (isInitialHit 
-            ||
-            (placeHasANumber && placeNumber == numberToBePlaced && isAdjacent)
-            || 
-            (!placeHasANumber && isAdjacent)
-            )
+        // Calculate adjacency based on the last number's position
+        bool isAdjacent = Mathf.Abs(lastClicked.x - pressed.x) == 1 && lastClicked.y == pressed.y ||
+                          lastClicked.x == pressed.x && Mathf.Abs(lastClicked.y - pressed.y) == 1;
+        
+        
+        // Valid move: Initial hit or placing the next number in sequence at an adjacent position
+        if (isInitialHit || 
+            (placeHasANumber && placeNumber == numberToBePlaced && isAdjacent) || 
+            (!placeHasANumber && isAdjacent))
         {
-            _lastClicked = pressed;
-
-            // Only set text if it's a valid move (or initially empty)
+            if(placeHasANumber && placeNumber != numberToBePlaced)
+            {
+                return;
+            }
+            _numberPositions.Push(pressed); // Update stack with the current position
             txt.text = numberToBePlaced.ToString();
-            numberToBePlaced++;
             txt.AddToClassList("confirmedNr");
-            if (numberToBePlaced == finalNr + 1)
+
+            if (numberToBePlaced == finalNr)
             {
                 Win();
-            
             }
             return;
         }
 
-        if(_lastClicked == pressed
-        || (isAdjacent && placeNumber == numberToBePlaced-1)
-        ){
-            if(!txt.ClassListContains("required")){
+        // Undo move: Clicking the last placed number or an adjacent number with the previous value
+        if (_numberPositions.Count > 0 &&
+            pressed == _numberPositions.Peek())
+        {
+            _numberPositions.Pop(); // Remove the last position from the stack
+            if (!txt.ClassListContains("required"))
+            {
                 txt.text = "";
             }
-            numberToBePlaced--;
             txt.RemoveFromClassList("confirmedNr");
-            _lastClicked = pressed;
-            if(numberToBePlaced == 1){
-                _lastClicked = new Vector2(-1,-1);
-            }
         }
-
     }
+
 
     [ContextMenu("win")]
     private void Win(){
+        PlayWin();
         _winPopUp.style.display = DisplayStyle.Flex;
         lvl++;
         lvlLabel.text = "Lvl"+lvl;
     }
 
+    private void Clear()
+    {
+        PlayClick();
+        while(_numberPositions.Count > 0)
+        {
+            Vector2 pos = _numberPositions.Pop();
+            Label label = board[(int)pos.x, (int)pos.y].Q<Label>();
+            if (!label.ClassListContains("required"))
+            {
+                label.text = "";
+            }
+            label.RemoveFromClassList("confirmedNr");
+        }
+    }
+
     private void StartNewGame(){
+        _numberPositions.Clear();
         _winPopUp.style.display = DisplayStyle.None;
-        numberToBePlaced = 1;
         _lastClicked = new Vector2(-1, -1);
         if(lvl<5){
             boardSize=3;
@@ -159,89 +181,106 @@ public class BoardManager : MonoBehaviour
         board = ConvertListToMatrix(buttons);
     }
 
-    private void FillBoardWithNumbers()
-    {
-        ClearBoard();
+   private void FillBoardWithNumbers()
+{
+    ClearBoard();
 
-        int rows = board.GetLength(0); // Get number of rows
-        int cols = board.GetLength(1); // Get number of columns
-        // Create a list of all possible directions to move (up, down, left, right)
-        Vector2[] directions = new Vector2[]
-        {
+    int rows = board.GetLength(0); // Get number of rows
+    int cols = board.GetLength(1); // Get number of columns
+
+    // Minimum number of steps required for the path
+    int minSteps = rows*cols-Random.Range(1,4);
+
+    // Create a list of all possible directions to move (up, down, left, right)
+    Vector2[] directions = new Vector2[]
+    {
         new Vector2(1, 0), // Down
         new Vector2(-1, 0), // Up
         new Vector2(0, 1), // Right
         new Vector2(0, -1) // Left
-        };
+    };
 
-        // Randomly select a starting position on the board
-        int startRow = Random.Range(0, rows);
-        int startCol = Random.Range(0, cols);
-        Vector2 currentPos = new Vector2(startRow, startCol);
+    // Generate random start and end positions that are not the same
+    Vector2 start;
+    Vector2 end;
+    do
+    {
+        start = new Vector2(Random.Range(0, rows), Random.Range(0, cols));
+        end = new Vector2(Random.Range(0, rows), Random.Range(0, cols));
+    } while (start == end);
 
-        // Initialize a counter for the numbers
-        int currentNumber = 1;
-        int maxNumbers = boardSize*boardSize;
+    Vector2 currentPos = start;
+    int currentNumber = 1;
+    int maxNumbers = boardSize * boardSize;
 
-        // List to track visited positions
-        HashSet<Vector2> visited = new HashSet<Vector2>();
-        visited.Add(currentPos);
+    // List to track visited positions
+    HashSet<Vector2> visited = new HashSet<Vector2>();
+    visited.Add(currentPos);
 
-        // Loop to place numbers
-        while (currentNumber <= maxNumbers)
+    // Keep track of the number of steps taken
+    int stepCount = 0;
+
+    // Loop to create a path from start to end
+    while ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
+    {
+        // Set the label text for the current position
+        int row = (int)currentPos.x;
+        int col = (int)currentPos.y;
+        Label label = board[row, col].Q<Label>(); // Get the Label component
+        if (label != null)
         {
-            // Set the label text for the current position
-            int row = (int)currentPos.x;
-            int col = (int)currentPos.y;
-            Label label = board[row, col].Q<Label>(); // Get the Label component
-            if (label != null)
-            {
-                label.text = currentNumber.ToString(); // Set the text to the current number
-                label.AddToClassList("required");
-            }
-
-            // Find a valid next position (adjacent and unvisited)
-            List<Vector2> validMoves = new List<Vector2>();
-
-            // Check all 4 directions
-            foreach (var direction in directions)
-            {
-                Vector2 nextPos = currentPos + direction;
-
-                // Ensure the position is within bounds and hasn't been visited yet
-                if (nextPos.x >= 0 && nextPos.x < rows && nextPos.y >= 0 && nextPos.y < cols && !visited.Contains(nextPos))
-                {
-                    validMoves.Add(nextPos);
-                }
-            }
-
-            // If we have valid moves, pick one randomly
-            if (validMoves.Count > 0)
-            {
-                currentPos = validMoves[Random.Range(0, validMoves.Count)];
-                visited.Add(currentPos);
-            }
-            else
-            {
-                // No valid moves, stop the loop (this shouldn't happen if there's enough space)
-                break;
-            }
-
-            // Increment the number
-            currentNumber++;
+            label.text = currentNumber.ToString(); // Set the text to the current number
+            label.AddToClassList("required");
         }
 
-        if(currentNumber > boardSize){
-            ClearSomeSpaces(currentNumber - 1);
-        }else{
-            FillBoardWithNumbers();
+        // Find possible moves
+        List<Vector2> validMoves = new List<Vector2>();
+
+        foreach (var direction in directions)
+        {
+            Vector2 nextPos = currentPos + direction;
+
+            // Ensure the position is within bounds and hasn't been visited yet
+            if (nextPos.x >= 0 && nextPos.x < rows && nextPos.y >= 0 && nextPos.y < cols && !visited.Contains(nextPos))
+            {
+                validMoves.Add(nextPos);
+            }
         }
+
+        // If valid moves exist, choose one
+        if (validMoves.Count > 0)
+        {
+            // Bias the direction slightly towards the endpoint to avoid the shortest path
+            Vector2 bestMove = validMoves.OrderBy(move => Random.Range(0, 2) == 0 ? Vector2.Distance(move, end) : Random.Range(0, 100)).First();
+            currentPos = bestMove;
+            visited.Add(currentPos);
+            stepCount++;
+        }
+        else
+        {
+            // No valid moves, end path generation
+            break;
+        }
+
+        currentNumber++;
     }
+
+    // Check if the path satisfies the minimum steps and end-point criteria
+    if ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
+    {
+        FillBoardWithNumbers(); // Retry generation
+    }
+    else
+    {
+        ClearSomeSpaces(currentNumber - 1);
+    }
+}
+
 
     private void ClearSomeSpaces(int maxNr)
     {
         finalNr = maxNr;
-        int lvl = Random.Range(6, maxNr);
+        int lvl = maxNr- Random.Range(3, 4);
         int deleted = 0;
 
         // Assuming board is a 2D array of VisualElement objects.
@@ -308,5 +347,40 @@ public class BoardManager : MonoBehaviour
             }
         }
         return new Vector2(-1, -1);
+    }
+    
+    private void PlayClick()
+    {
+        click.Play();
+    } 
+    private void PlayWin()
+    {
+        win.Play();
+    }
+
+    private void TogleAudio()
+    {
+        if (win.volume==0)
+        {
+            win.volume = 1;
+            click.volume = 1;
+        }
+        else
+        {
+            win.volume = 0;
+            click.volume = 0;
+        }
+    }
+
+    private void TogleMusic()
+    {
+        if (music.volume == 0)
+        {
+            music.volume = 1;
+        }
+        else
+        {
+            music.volume = 0;
+        }
     }
 }

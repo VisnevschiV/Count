@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/_ProjectAssets/UI/Menu.uss?fileID=7433441132597879392&amp;guid=3082553d044d64293abeeeb9d893db1b&amp;type=3#Menu" />
     <engine:VisualElement style="flex-grow: 1; color: rgb(90, 87, 102); background-color: rgb(90, 87, 102); display: flex;">
         <engine:VisualElement name="logoWrapper" style="flex-grow: 1; height: 40%; width: 100%; justify-content: space-around;">
-            <engine:VisualElement style="background-color: rgb(255, 0, 0); width: 300px; height: 300px;" />
+            <engine:VisualElement style="background-color: rgba(255, 0, 0, 0); width: 400px; height: 400px; background-image: url(&quot;project://database/Assets/_ProjectAssets/T/logo%20COUNT-07.png?fileID=2800000&amp;guid=f479472af9c89044eb5b28817400069e&amp;type=3#logo COUNT-07&quot;);" />
         </engine:VisualElement>
         <engine:VisualElement name="buttonWrapper" style="flex-grow: 1; height: 60%;">
             <engine:Button text="Play" name="Play" />

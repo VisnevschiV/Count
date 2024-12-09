@@ -3,6 +3,10 @@
     <engine:VisualElement name="root" class="violet" style="flex-grow: 1;">
         <engine:VisualElement name="top" style="flex-grow: 1; flex-direction: row; align-items: flex-start; justify-content: space-around; padding-top: 121px;">
             <engine:Label text="Lvl1" name="lvl" class="white" />
+            <engine:VisualElement name="audioButtons" style="width: 30%; flex-direction: row; justify-content: space-around; align-items: center; height: 35%;">
+                <engine:Button text="&#10;" name="sound" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/volume.png?fileID=2800000&amp;guid=eb2cf486ccd1ec64490cc0f59d067616&amp;type=3#volume&quot;);" />
+                <engine:Button name="music" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/musical-note.png?fileID=2800000&amp;guid=1ea8d83b65660d042ae88086fcdf7e41&amp;type=3#musical-note&quot;);" />
+            </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="mid" style="flex-grow: 1; align-items: center; justify-content: space-around;">
             <engine:VisualElement name="playArea">
@@ -56,8 +60,9 @@
                 </engine:VisualElement>
             </engine:VisualElement>
         </engine:VisualElement>
-        <engine:VisualElement name="bot" style="flex-grow: 1; flex-direction: row-reverse; justify-content: center; align-items: center;">
-            <engine:Button enable-rich-text="false" name="restart" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/reload.png?fileID=2800000&amp;guid=58a00eb8ad15f41ae991ab60af79a623&amp;type=3#reload&quot;); background-size: 70% 70%; background-position-x: center 0; background-position-y: center 0;" />
+        <engine:VisualElement name="bot" style="flex-grow: 1; flex-direction: row-reverse; justify-content: space-around; align-items: center;">
+            <engine:Button enable-rich-text="false" name="restart" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/reload.png?fileID=2800000&amp;guid=58a00eb8ad15f41ae991ab60af79a623&amp;type=3#reload&quot;); background-size: 70% 70%;" />
+            <engine:Button enable-rich-text="false" name="clear" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/clear.png?fileID=2800000&amp;guid=6cc15be2e383c574e978865b65be8cb2&amp;type=3#clear&quot;); background-size: 70% 70%;" />
         </engine:VisualElement>
     </engine:VisualElement>
     <engine:VisualElement name="popUp" style="flex-grow: 1; display: none;">

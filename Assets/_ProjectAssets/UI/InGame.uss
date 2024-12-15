@@ -47,7 +47,7 @@ VisualElement {
     border-bottom-right-radius: 50%;
     border-bottom-left-radius: 50%;
     background-color: rgba(111, 101, 101, 0.89);
-    background-image: url('project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=8228938214290033325&guid=18e088599eef64a6b90126f9890e897f&type=3#console.erroricon');
+    background-image: url("project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=8228938214290033325&guid=18e088599eef64a6b90126f9890e897f&type=3#console.erroricon");
     justify-content: space-around;
     align-items: center;
 }
@@ -121,4 +121,10 @@ VisualElement {
     background-position-x: center 0;
     background-position-y: center 0;
     background-color: rgb(111, 101, 101);
+}
+
+.helped {
+    color: rgb(6, 255, 134);
+    font-size: 119px;
+    -unity-font-style: bold;
 }

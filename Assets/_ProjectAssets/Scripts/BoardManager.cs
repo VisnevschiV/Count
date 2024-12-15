@@ -135,7 +135,28 @@ public class BoardManager : MonoBehaviour
     private void Help()
     {
        
-        MatrixFiller.SolvePuzzle(GetMatrixAsInt(board));
+        int[,] newBoard = MatrixFiller.SolvePuzzle(GetMatrixAsInt(board));
+        if (newBoard!=null)
+        {
+            Vector2 postion = GetIndexOf<int>(newBoard, _numberPositions.Count + 1);
+            board[(int) postion.x, (int) postion.y].Q<Label>().text = (_numberPositions.Count + 1).ToString();
+            board[(int) postion.x, (int) postion.y].Q<Label>().AddToClassList("helped");
+            _numberPositions.Push(postion);
+            if (_numberPositions.Count == finalNr)
+            {
+                Win();
+            }
+        }
+        else if (_numberPositions.Count>0)
+        {
+            Vector2 toDelete = _numberPositions.Peek();
+            if (!board[(int) toDelete.x, (int) toDelete.y].Q<Label>().ClassListContains("required"))
+            {
+                board[(int) toDelete.x, (int) toDelete.y].Q<Label>().text = "";
+                _numberPositions.Pop();
+            }
+        }
+        
     }
 
 
@@ -394,13 +415,13 @@ public class BoardManager : MonoBehaviour
     }
 
 
-    private Vector2 GetIndexOf(VisualElement[,] matrix, VisualElement target)
+    private Vector2 GetIndexOf<T>(T[,] matrix, T target)
     {
         for (int i = 0; i < matrix.GetLength(0); i++)
         {
             for (int j = 0; j < matrix.GetLength(1); j++)
             {
-                if (matrix[i, j] == target)
+                if (EqualityComparer<T>.Default.Equals(matrix[i, j], target))
                 {
                     return new Vector2(i, j);
                 }
@@ -409,6 +430,7 @@ public class BoardManager : MonoBehaviour
 
         return new Vector2(-1, -1);
     }
+
 
     private int[,] GetMatrixAsInt(VisualElement[,] board)
     {

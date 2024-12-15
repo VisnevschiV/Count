@@ -8,7 +8,7 @@ public class MatrixFiller
     private static readonly int[] ColOffsets = { 0, 0, -1, 1 };
 
     // Solve the puzzle and print the solution
-    public static void SolvePuzzle(int[,] board)
+    public static int[,] SolvePuzzle(int[,] board)
     {
         int targetNumber = FindHighestNumber(board); // Determine the highest pre-defined number
 
@@ -22,18 +22,20 @@ public class MatrixFiller
         if (startRow == -1)
         {
             Debug.Log("No valid starting position found.");
-            return;
+            return null;
         }
 
         if (SolveBoard(board, startRow, startCol, 1, targetNumber))
         {
             Debug.Log($"Solved Board up to {targetNumber}:");
-            PrintBoard(board);
+            return board;
         }
         else
         {
             Debug.Log($"No solution found up to {targetNumber}.");
         }
+
+        return null;
     }
 
     // Find the highest pre-defined number on the board

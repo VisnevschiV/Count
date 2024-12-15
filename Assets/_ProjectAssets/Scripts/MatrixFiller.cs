@@ -10,42 +10,86 @@ public class MatrixFiller
     // Solve the puzzle and print the solution
     public static void SolvePuzzle(int[,] board)
     {
-        int maxNumber = board.GetLength(0) * board.GetLength(1); // Maximum number to place
+        int targetNumber = FindHighestNumber(board); // Determine the highest pre-defined number
 
-        if (SolveBoard(board, 1, maxNumber))
+        // Find the starting position of '1' or the first empty cell
+        (int startRow, int startCol) = FindNumberPosition(board, 1);
+        if (startRow == -1) // If '1' is not found, look for the first empty cell
         {
-            Debug.Log("Solved Board:");
+            (startRow, startCol) = FindFirstEmptyCell(board);
+        }
+
+        if (startRow == -1)
+        {
+            Debug.Log("No valid starting position found.");
+            return;
+        }
+
+        if (SolveBoard(board, startRow, startCol, 1, targetNumber))
+        {
+            Debug.Log($"Solved Board up to {targetNumber}:");
             PrintBoard(board);
         }
         else
         {
-            Debug.Log("No solution found.");
+            Debug.Log($"No solution found up to {targetNumber}.");
         }
     }
 
-    // Recursive function to solve the board
-    private static bool SolveBoard(int[,] board, int currentNumber, int maxNumber)
+    // Find the highest pre-defined number on the board
+    private static int FindHighestNumber(int[,] board)
+    {
+        int highestNumber = 0;
+
+        for (int row = 0; row < board.GetLength(0); row++)
+        {
+            for (int col = 0; col < board.GetLength(1); col++)
+            {
+                if (board[row, col] > highestNumber)
+                    highestNumber = board[row, col];
+            }
+        }
+
+        return highestNumber;
+    }
+
+    // Find the position of a specific number on the board
+    private static (int, int) FindNumberPosition(int[,] board, int number)
     {
         for (int row = 0; row < board.GetLength(0); row++)
         {
             for (int col = 0; col < board.GetLength(1); col++)
             {
-                // Find the starting position or continue placing numbers
-                if (board[row, col] == currentNumber - 1 || (currentNumber == 1 && board[row, col] == 0))
-                {
-                    if (TryPlaceNumber(board, row, col, currentNumber, maxNumber))
-                        return true;
-                }
+                if (board[row, col] == number)
+                    return (row, col);
             }
         }
 
-        return false; // No solution found
+        // Default to (-1, -1) if the number is not found
+        return (-1, -1);
     }
 
-    private static bool TryPlaceNumber(int[,] board, int row, int col, int currentNumber, int maxNumber)
+    // Find the first empty cell in the board
+    private static (int, int) FindFirstEmptyCell(int[,] board)
     {
-        // Base case: All numbers placed
-        if (currentNumber > maxNumber)
+        for (int row = 0; row < board.GetLength(0); row++)
+        {
+            for (int col = 0; col < board.GetLength(1); col++)
+            {
+                if (board[row, col] == 0)
+                    return (row, col);
+            }
+        }
+
+        // Default to (-1, -1) if no empty cell is found
+        return (-1, -1);
+    }
+
+    // Recursive function to solve the board
+    private static bool SolveBoard(int[,] board, int row, int col, int currentNumber, int targetNumber)
+    {
+        // Base case: Stop if the target number is reached
+        if (currentNumber > targetNumber)
             return true;
 
         // Check if the current cell is valid for placement
@@ -61,7 +105,7 @@ public class MatrixFiller
             int newRow = row + RowOffsets[direction];
             int newCol = col + ColOffsets[direction];
 
-            if (TryPlaceNumber(board, newRow, newCol, currentNumber + 1, maxNumber))
+            if (SolveBoard(board, newRow, newCol, currentNumber + 1, targetNumber))
                 return true;
         }
 

@@ -22,6 +22,7 @@ public class BoardManager : MonoBehaviour
     private Vector2 _lastClicked = new Vector2(-1, -1);
     private Stack<Vector2> _numberPositions = new Stack<Vector2>();
 
+
     private void OnEnable()
     {
         // Ensure the UIDocument is assigned
@@ -133,7 +134,8 @@ public class BoardManager : MonoBehaviour
 
     private void Help()
     {
-        
+        Debug.Log("try Solve");
+        MatrixFiller.SolvePuzzle(GetMatrixAsInt(board));
     }
 
 
@@ -179,10 +181,37 @@ public class BoardManager : MonoBehaviour
                 {
                     label.RemoveFromClassList("confirmedNr");
                     label.RemoveFromClassList("required");
-                    label.text = ""; // Clear the label's text
+                    label.text = ""; 
                 }
             }
         }
+    }
+
+    private Vector2 FindStartPosition()
+    {
+        for (int i = 0; i < boardSize; i++)
+        {
+            for (int j = 0; j < boardSize; j++)
+            {
+                if (board[i,j].Q<Label>().text =="1")
+                {
+                    return new Vector2(i, j);
+                }
+            }
+        }
+
+        return new Vector2(-1, -1);
+    }
+
+    private int FindLastNumber()
+    {
+        return 1;
+    }
+    
+    [ContextMenu("complete")]
+    private void CompletePathAfterClear()
+    {
+        
     }
 
     private void CreateBoard(int size)
@@ -379,6 +408,34 @@ public class BoardManager : MonoBehaviour
         }
 
         return new Vector2(-1, -1);
+    }
+
+    private int[,] GetMatrixAsInt(VisualElement[,] board)
+    {
+        int rows = board.GetLength(0);
+        int cols = board.GetLength(1);
+
+        int[,] matrix = new int[rows, cols];
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                VisualElement element = board[i, j];
+                string text = element?.Q<Label>()?.text; // Assuming the number is in a Label within the VisualElement
+
+                if (int.TryParse(text, out int number))
+                {
+                    matrix[i, j] = number; // Assign the parsed number
+                }
+                else
+                {
+                    matrix[i, j] = 0; // Default to 0 if parsing fails or text is empty
+                }
+            }
+        }
+
+        return matrix;
     }
 
     #region audio

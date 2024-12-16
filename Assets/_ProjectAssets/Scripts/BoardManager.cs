@@ -149,6 +149,7 @@ public class BoardManager : MonoBehaviour
         }
         else if (_numberPositions.Count>0)
         {
+            return;
             Vector2 toDelete = _numberPositions.Peek();
             if (!board[(int) toDelete.x, (int) toDelete.y].Q<Label>().ClassListContains("required"))
             {

@@ -134,7 +134,7 @@ public class BoardManager : MonoBehaviour
 
     private void Help()
     {
-       
+        PlayAds();
         int[,] newBoard = MatrixFiller.SolvePuzzle(GetMatrixAsInt(board));
         if (newBoard!=null)
         {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,8 +20,10 @@ public class BoardManager : MonoBehaviour
     private int finalNr = 1000;
     private VisualElement playArea;
     private VisualElement[,] board;
+    private int[,] int_board;
     private Vector2 _lastClicked = new Vector2(-1, -1);
     private Stack<Vector2> _numberPositions = new Stack<Vector2>();
+    List<Vector2> visited = new List<Vector2>();
 
 
     private void OnEnable()
@@ -83,7 +86,7 @@ public class BoardManager : MonoBehaviour
             txt.text = numberToBePlaced.ToString();
             txt.AddToClassList("confirmedNr");
 
-            if (numberToBePlaced == finalNr)
+            if (numberToBePlaced == finalNr && NoDoubleNumbers())
             {
                 Win();
             }
@@ -103,6 +106,34 @@ public class BoardManager : MonoBehaviour
 
             txt.RemoveFromClassList("confirmedNr");
         }
+    }
+
+    private bool NoDoubleNumbers()
+    {
+        HashSet<string> seenNumbers = new HashSet<string>();
+        int rows = board.GetLength(0);
+        int cols = board.GetLength(1);
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                // Get the Label component of the VisualElement
+                Label label = board[i, j].Q<Label>();
+                if (label != null && !string.IsNullOrEmpty(label.text))
+                {
+                    // Check if the number is already in the HashSet
+                    if (!seenNumbers.Add(label.text))
+                    {
+                        // Duplicate found
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // No duplicates found
+        return true;
     }
 
 
@@ -135,28 +166,25 @@ public class BoardManager : MonoBehaviour
     private void Help()
     {
         PlayAds();
-        int[,] newBoard = MatrixFiller.SolvePuzzle(GetMatrixAsInt(board));
-        if (newBoard!=null)
+        if (visited.Count>1)
         {
-            Vector2 postion = GetIndexOf<int>(newBoard, _numberPositions.Count + 1);
-            board[(int) postion.x, (int) postion.y].Q<Label>().text = (_numberPositions.Count + 1).ToString();
-            board[(int) postion.x, (int) postion.y].Q<Label>().AddToClassList("helped");
-            _numberPositions.Push(postion);
-            if (_numberPositions.Count == finalNr)
+            List<Vector2> local = visited;
+
+            while (local.Count > 1)
             {
-                Win();
+                int index = Random.Range(0, local.Count - 1);
+                if (board[(int) local[index].x, (int) local[index].y].Q<Label>().text == "")
+                {
+                    board[(int) local[index].x, (int) local[index].y].Q<Label>().text =
+                        int_board[(int) local[index].x, (int) local[index].y].ToString();
+                    visited.Remove(visited[index]);
+                    return;
+                }
+
+                local.Remove(local[index]);
             }
         }
-        else if (_numberPositions.Count>0)
-        {
-            return;
-            Vector2 toDelete = _numberPositions.Peek();
-            if (!board[(int) toDelete.x, (int) toDelete.y].Q<Label>().ClassListContains("required"))
-            {
-                board[(int) toDelete.x, (int) toDelete.y].Q<Label>().text = "";
-                _numberPositions.Pop();
-            }
-        }
+        
         
     }
 
@@ -207,6 +235,7 @@ public class BoardManager : MonoBehaviour
                 }
             }
         }
+        visited.Clear();
     }
 
     private Vector2 FindStartPosition()
@@ -223,17 +252,6 @@ public class BoardManager : MonoBehaviour
         }
 
         return new Vector2(-1, -1);
-    }
-
-    private int FindLastNumber()
-    {
-        return 1;
-    }
-    
-    [ContextMenu("complete")]
-    private void CompletePathAfterClear()
-    {
-        
     }
 
     private void CreateBoard(int size)
@@ -268,6 +286,7 @@ public class BoardManager : MonoBehaviour
         int rows = board.GetLength(0); // Get number of rows
         int cols = board.GetLength(1); // Get number of columns
 
+        int_board = new int[board.GetLength(0), board.GetLength(1)];
         // Minimum number of steps required for the path
         int minSteps = rows * cols - Random.Range(1, 4);
 
@@ -294,7 +313,6 @@ public class BoardManager : MonoBehaviour
         int maxNumbers = boardSize * boardSize;
 
         // List to track visited positions
-        HashSet<Vector2> visited = new HashSet<Vector2>();
         visited.Add(currentPos);
 
         // Keep track of the number of steps taken
@@ -306,13 +324,10 @@ public class BoardManager : MonoBehaviour
             // Set the label text for the current position
             int row = (int) currentPos.x;
             int col = (int) currentPos.y;
-            Label label = board[row, col].Q<Label>(); // Get the Label component
-            if (label != null)
+            if (int_board[row,col] ==0)
             {
-                label.text = currentNumber.ToString(); // Set the text to the current number
-                label.AddToClassList("required");
+                int_board[row, col] = currentNumber;
             }
-
             // Find possible moves
             List<Vector2> validMoves = new List<Vector2>();
 
@@ -354,41 +369,30 @@ public class BoardManager : MonoBehaviour
         }
         else
         {
-            ClearSomeSpaces(currentNumber - 1);
-        }
-    }
+            
 
-
-    private void ClearSomeSpaces(int maxNr)
-    {
-        finalNr = maxNr;
-        int lvl = maxNr - Random.Range(3, 4);
-        int deleted = 0;
-
-        // Assuming board is a 2D array of VisualElement objects.
-        while (deleted < lvl)
-        {
-            int x = Random.Range(0, board.GetLength(0));
-            int y = Random.Range(0, board.GetLength(1));
-            VisualElement place = board[x, y];
-
-            // Get the Label component within the VisualElement
-            Label label = place.Q<Label>();
-
-            // Ensure the label is not empty and parse the number if possible
-            if (label != null && label.text != "" && int.TryParse(label.text, out int parsedValue))
+            visited.Remove(visited.Last());
+            RequireNumber(visited.Last());
+            finalNr = int_board[(int)visited.Last().x, (int)visited.Last().y];
+            visited.Remove(visited.Last());
+            for (int i = 0; i < Random.Range(1,3); i++)
             {
-                // Only delete if the parsed value is not equal to maxNr
-                if (parsedValue != maxNr)
-                {
-                    label.RemoveFromClassList("required");
-                    label.text = ""; // Clear the label's text
-                    deleted++; // Increment the counter for deleted spaces
-                }
+                int index = Random.Range(0, visited.Count - 1);
+                RequireNumber(visited[index]);
+                visited.Remove(visited[index]);
+            }
+            foreach (var v in visited)
+            {
+                Debug.Log($"{int_board[(int)v.x,(int)v.y]} at {v}");
             }
         }
     }
 
+    private void RequireNumber(Vector2 pos)
+    {
+        board[(int)pos.x, (int)pos.y].Q<Label>().text = int_board[(int)pos.x, (int)pos.y].ToString();
+        board[(int)pos.x, (int)pos.y].Q<Label>().AddToClassList("required");
+    }
     public VisualElement[,] ConvertListToMatrix(List<VisualElement> inputList)
     {
         // Check if the list has a perfect square number of elements

@@ -80,7 +80,7 @@
     <engine:VisualElement name="timeOverPopUp" class="popUp" style="display: none;">
         <engine:VisualElement>
             <engine:Label text="Time Over" class="white titleText" style="font-size: 184px;" />
-            <engine:Label text="Record: 7" name="LastRecord" style="font-size: 93px; color: rgba(255, 255, 255, 0.36); -unity-font-style: bold;" />
+            <engine:Label text="Record: 7" name="record" style="font-size: 93px; color: rgba(255, 255, 255, 0.36); -unity-font-style: bold;" />
             <engine:Label text="Score: 20" name="score" class="white titleText" style="font-size: 124px; color: rgba(237, 255, 236, 0.77);" />
             <engine:Button text="Home" style="background-color: rgb(97, 231, 134); width: 413px; height: 136px; margin-top: 154px; margin-right: 154px; margin-bottom: 154px; margin-left: 154px; border-top-left-radius: 45px; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 45px; font-size: 65px; -unity-font-style: bold;" />
         </engine:VisualElement>

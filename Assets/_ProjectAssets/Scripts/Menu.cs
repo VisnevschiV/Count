@@ -13,7 +13,7 @@ public class Menu : MonoBehaviour
 
     private VisualElement _tutorialWindow;
     private int _tutorialStep;
-    void Start()
+    void OnEnable()
     {
         // Ensure the UIDocument is assigned
         if (uiDocument == null)
@@ -30,6 +30,9 @@ public class Menu : MonoBehaviour
         rootVisualElement.Q<Button>("Play").clicked += PlayClick;
         rootVisualElement.Q<Button>("HowTo").clicked += PlayClick;
         rootVisualElement.Q<Button>("Next").clicked += PlayClick;
+        
+        rootVisualElement.Q<Label>("record").text = "High Score: " + (PlayerPrefs.HasKey("record") ? PlayerPrefs.GetInt("record").ToString() : "0");
+        
         _tutorialWindow = rootVisualElement.Q<VisualElement>("tutorialWindow");
     }
 

@@ -5,6 +5,7 @@
             <engine:VisualElement style="background-color: rgba(255, 0, 0, 0); width: 400px; height: 400px; background-image: url(&quot;project://database/Assets/_ProjectAssets/T/logo%20COUNT-07.png?fileID=2800000&amp;guid=f479472af9c89044eb5b28817400069e&amp;type=3#logo COUNT-07&quot;);" />
         </engine:VisualElement>
         <engine:VisualElement name="buttonWrapper" style="flex-grow: 1; height: 60%;">
+            <engine:Label text="Label" name="record" style="font-size: 71px; color: rgba(231, 231, 231, 0.79); -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=18e088599eef64a6b90126f9890e897f&amp;type=3#NotInter-Regular&quot;);" />
             <engine:Button text="Competitive" name="Play" style="width: 587px;" />
             <engine:Button text="How To " name="HowTo" />
         </engine:VisualElement>

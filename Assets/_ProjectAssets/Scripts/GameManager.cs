@@ -98,6 +98,19 @@ public class GameManager : MonoBehaviour
 
     private void TimeOver()
     {
+        if(PlayerPrefs.HasKey("HighScore"))
+        {
+            _timeOverPopUp.Q<Label>("record").text = "High Score: " + PlayerPrefs.GetInt("HighScore");
+            if (_lvl > PlayerPrefs.GetInt("HighScore"))
+            {
+                PlayerPrefs.SetInt("HighScore", _lvl);
+            }
+        }
+        else
+        {
+            _timeOverPopUp.Q<Label>("record").text = "High Score: " + _lvl;
+            PlayerPrefs.SetInt("HighScore", _lvl);
+        }
         _timeOverPopUp.style.display = DisplayStyle.Flex;
         _timeOverPopUp.Q<Label>("score").text = "Score: " + _lvl;
     }

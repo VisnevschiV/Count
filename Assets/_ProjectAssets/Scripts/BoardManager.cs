@@ -155,12 +155,12 @@ public class BoardManager : MonoBehaviour
                 int index = Random.Range(0, local.Count); // Pick a random index
                 Vector2 pos = local[index];
 
-                Label label = _board[(int)pos.x, (int)pos.y].Q<Label>();
+                Label label = _board[(int) pos.x, (int) pos.y].Q<Label>();
 
                 // Check if the cell is empty before placing a number
                 if (string.IsNullOrEmpty(label.text))
                 {
-                    label.text = _int_board[(int)pos.x, (int)pos.y].ToString();
+                    label.text = _int_board[(int) pos.x, (int) pos.y].ToString();
                     label.AddToClassList("required"); // Mark it as required
                     _visited.Remove(pos); // Remove from visited since it's now placed
                     return;
@@ -170,7 +170,6 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
-
 
 
     private void ClearBoard()
@@ -225,86 +224,79 @@ public class BoardManager : MonoBehaviour
     }
 
     public void FillBoardWithNumbers()
-{
-    ClearBoard();
-
-    int rows = _board.GetLength(0);
-    int cols = _board.GetLength(1);
-    _int_board = new int[rows, cols];
-    _visited.Clear(); // Ensure it's fresh
-
-    int minSteps = rows * cols - Random.Range(1, 4);
-    int maxNumbers = _boardSize * _boardSize;
-
-    Vector2[] directions = new Vector2[]
     {
-        new Vector2(1, 0), // Down
-        new Vector2(-1, 0), // Up
-        new Vector2(0, 1), // Right
-        new Vector2(0, -1) // Left
-    };
+        ClearBoard();
 
-    Vector2 start, end;
-    do
-    {
-        start = GetRandomPosition(rows, cols);
-        end = GetRandomPosition(rows, cols);
-    } while (start == end);
+        int rows = _board.GetLength(0);
+        int cols = _board.GetLength(1);
+        _int_board = new int[rows, cols];
+        _visited.Clear(); // Ensure it's fresh
 
-    Debug.Log($"Start: {start}, End: {end}");
+        int minSteps = rows * cols - Random.Range(1, 4);
+        int maxNumbers = _boardSize * _boardSize;
 
-    HashSet<Vector2> visited = new HashSet<Vector2> {start};
-    Vector2 currentPos = start;
-    int currentNumber = 1, stepCount = 0;
+        Vector2[] directions = new Vector2[]
+        {
+            new Vector2(1, 0), // Down
+            new Vector2(-1, 0), // Up
+            new Vector2(0, 1), // Right
+            new Vector2(0, -1) // Left
+        };
 
-    while ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
-    {
-        _int_board[(int)currentPos.x, (int)currentPos.y] = currentNumber++;
-        _visited.Add(currentPos); // ✅ Ensure positions are stored
+        Vector2 start, end;
+        do
+        {
+            start = GetRandomPosition(rows, cols);
+            end = GetRandomPosition(rows, cols);
+        } while (start == end);
 
-        List<Vector2> validMoves = GetValidMoves(currentPos, directions, rows, cols, visited);
-        if (validMoves.Count == 0) break;
+        HashSet<Vector2> visited = new HashSet<Vector2> {start};
+        Vector2 currentPos = start;
+        int currentNumber = 1, stepCount = 0;
 
-        currentPos = validMoves.OrderBy(move =>
-            Random.Range(0, 2) == 0 ? Vector2.Distance(move, end) : Random.Range(0, 100)).First();
+        while ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
+        {
+            _int_board[(int) currentPos.x, (int) currentPos.y] = currentNumber++;
+            _visited.Add(currentPos); // ✅ Ensure positions are stored
 
-        visited.Add(currentPos);
-        stepCount++;
+            List<Vector2> validMoves = GetValidMoves(currentPos, directions, rows, cols, visited);
+            if (validMoves.Count == 0) break;
+
+            currentPos = validMoves.OrderBy(move =>
+                Random.Range(0, 2) == 0 ? Vector2.Distance(move, end) : Random.Range(0, 100)).First();
+
+            visited.Add(currentPos);
+            stepCount++;
+        }
+
+        if ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
+        {
+            FillBoardWithNumbers(); // Retry generation
+            return;
+        }
+
+        // Ensure the last required number is placed
+        if (_visited.Count > 1)
+        {
+            RequireNumber(_visited.Last());
+            _finalNr = _int_board[(int) _visited.Last().x, (int) _visited.Last().y];
+            _visited.RemoveAt(_visited.Count - 1);
+        }
+
+        for (int i = 0; i < Random.Range(1, 3) && _visited.Count > 0; i++)
+        {
+            int index = Random.Range(0, _visited.Count);
+            RequireNumber(_visited[index]);
+            _visited.RemoveAt(index);
+        }
     }
 
-    Debug.Log($"Final position: {currentPos}, Steps taken: {stepCount}");
 
-    if ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
-    {
-        Debug.LogWarning("Failed to create a valid path, retrying...");
-        FillBoardWithNumbers(); // Retry generation
-        return;
-    }
-
-    // Ensure the last required number is placed
-    if (_visited.Count > 1)
-    {
-        RequireNumber(_visited.Last());
-        _finalNr = _int_board[(int)_visited.Last().x, (int)_visited.Last().y];
-        _visited.RemoveAt(_visited.Count - 1);
-    }
-
-    for (int i = 0; i < Random.Range(1, 3) && _visited.Count > 0; i++)
-    {
-        int index = Random.Range(0, _visited.Count);
-        RequireNumber(_visited[index]);
-        _visited.RemoveAt(index);
-    }
-
-    Debug.Log($"_visited size after generation: {_visited.Count}");
-}
-
-    
     private Vector2 GetRandomPosition(int rows, int cols)
     {
         return new Vector2(Random.Range(0, rows), Random.Range(0, cols));
     }
-    
+
     private List<Vector2> GetValidMoves(Vector2 currentPos, Vector2[] directions, int rows, int cols,
         HashSet<Vector2> visited)
     {

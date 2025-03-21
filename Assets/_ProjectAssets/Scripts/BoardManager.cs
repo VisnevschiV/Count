@@ -12,12 +12,12 @@ public class BoardManager : MonoBehaviour
     public UIDocument uiDocument;
     public AudioManager audioManager;
     public GameManager gameManager;
-    
+
     private int _boardSize = 3;
 
     private VisualElement _rootVisualElement;
-    
-    
+
+
     private int _finalNr = 1000;
     private VisualElement _playArea;
     private VisualElement[,] _board;
@@ -26,7 +26,6 @@ public class BoardManager : MonoBehaviour
     private Stack<Vector2> _placedNumbersPositions = new Stack<Vector2>();
     private List<Vector2> _visited = new List<Vector2>();
 
-    
 
     private void OnEnable()
     {
@@ -39,12 +38,10 @@ public class BoardManager : MonoBehaviour
 
         // Get the root VisualElement of the UI
         _rootVisualElement = uiDocument.rootVisualElement;
-        
+
         _playArea = _rootVisualElement.Q<VisualElement>("playArea");
-        
     }
 
-   
 
     // Method to handle button click events
     private void OnButtonClick(VisualElement button)
@@ -61,8 +58,8 @@ public class BoardManager : MonoBehaviour
             RemoveNumber(txt);
             return;
         }
-        
-        
+
+
         // Check if the text is a valid integer
         bool placeHasANumber = int.TryParse(txt.text, out int placeNumber);
         bool isInitialHit = _placedNumbersPositions.Count == 0;
@@ -72,10 +69,10 @@ public class BoardManager : MonoBehaviour
         bool isAdjacent = Mathf.Abs(lastClicked.x - buttonIndex.x) == 1 && lastClicked.y == buttonIndex.y ||
                           lastClicked.x == buttonIndex.x && Mathf.Abs(lastClicked.y - buttonIndex.y) == 1;
 
-        
-        if (isInitialHit ||//first nr
-            (placeHasANumber && placeNumber == numberToBePlaced && isAdjacent) ||//place a required nr
-            (!placeHasANumber && isAdjacent))//place a nr
+
+        if (isInitialHit || //first nr
+            (placeHasANumber && placeNumber == numberToBePlaced && isAdjacent) || //place a required nr
+            (!placeHasANumber && isAdjacent)) //place a nr
         {
             _placedNumbersPositions.Push(buttonIndex);
             txt.text = numberToBePlaced.ToString();
@@ -99,8 +96,8 @@ public class BoardManager : MonoBehaviour
 
         txt.RemoveFromClassList("confirmedNr");
     }
-    
-    
+
+
     private bool NoDoubleNumbers()
     {
         HashSet<string> seenNumbers = new HashSet<string>();
@@ -128,8 +125,6 @@ public class BoardManager : MonoBehaviour
     }
 
 
-   
-
     public void ClearPlacedNumbers()
     {
         audioManager.PlayClick();
@@ -149,7 +144,7 @@ public class BoardManager : MonoBehaviour
 
     public void Help()
     {
-        if (_visited.Count>1)
+        if (_visited.Count > 1)
         {
             List<Vector2> local = _visited;
 
@@ -167,16 +162,14 @@ public class BoardManager : MonoBehaviour
                 local.Remove(local[index]);
             }
         }
-        
-        
     }
-    
+
 
     private void ClearBoard()
     {
         int rows = _board.GetLength(0); // Get number of rows
         int cols = _board.GetLength(1); // Get number of columns
-        
+
         // Clear all labels by setting them to an empty string
         for (int i = 0; i < rows; i++)
         {
@@ -187,11 +180,11 @@ public class BoardManager : MonoBehaviour
                 {
                     label.RemoveFromClassList("confirmedNr");
                     label.RemoveFromClassList("required");
-                    label.text = ""; 
+                    label.text = "";
                 }
             }
         }
-        
+
         _placedNumbersPositions.Clear();
         _lastClicked = new Vector2(-1, -1);
         _visited.Clear();
@@ -227,14 +220,13 @@ public class BoardManager : MonoBehaviour
     {
         ClearBoard();
 
-        int rows = _board.GetLength(0); // Get number of rows
-        int cols = _board.GetLength(1); // Get number of columns
+        int rows = _board.GetLength(0);
+        int cols = _board.GetLength(1);
+        _int_board = new int[rows, cols];
 
-        _int_board = new int[_board.GetLength(0), _board.GetLength(1)];
-        // Minimum number of steps required for the path
         int minSteps = rows * cols - Random.Range(1, 4);
+        int maxNumbers = _boardSize * _boardSize;
 
-        // Create a list of all possible directions to move (up, down, left, right)
         Vector2[] directions = new Vector2[]
         {
             new Vector2(1, 0), // Down
@@ -243,94 +235,80 @@ public class BoardManager : MonoBehaviour
             new Vector2(0, -1) // Left
         };
 
-        // Generate random start and end positions that are not the same
-        Vector2 start;
-        Vector2 end;
+        Vector2 start, end;
         do
         {
-            start = new Vector2(Random.Range(0, rows), Random.Range(0, cols));
-            end = new Vector2(Random.Range(0, rows), Random.Range(0, cols));
+            start = GetRandomPosition(rows, cols);
+            end = GetRandomPosition(rows, cols);
         } while (start == end);
 
+        HashSet<Vector2> visited = new HashSet<Vector2> {start};
         Vector2 currentPos = start;
-        int currentNumber = 1;
-        int maxNumbers = _boardSize * _boardSize;
+        int currentNumber = 1, stepCount = 0;
 
-        // List to track visited positions
-        _visited.Add(currentPos);
-
-        // Keep track of the number of steps taken
-        int stepCount = 0;
-
-        // Loop to create a path from start to end
         while ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
         {
-            // Set the label text for the current position
-            int row = (int) currentPos.x;
-            int col = (int) currentPos.y;
-            if (_int_board[row,col] ==0)
-            {
-                _int_board[row, col] = currentNumber;
-            }
-            // Find possible moves
-            List<Vector2> validMoves = new List<Vector2>();
+            _int_board[(int) currentPos.x, (int) currentPos.y] = currentNumber++;
 
-            foreach (var direction in directions)
-            {
-                Vector2 nextPos = currentPos + direction;
+            List<Vector2> validMoves = GetValidMoves(currentPos, directions, rows, cols, visited);
+            if (validMoves.Count == 0) break;
 
-                // Ensure the position is within bounds and hasn't been visited yet
-                if (nextPos.x >= 0 && nextPos.x < rows && nextPos.y >= 0 && nextPos.y < cols &&
-                    !_visited.Contains(nextPos))
-                {
-                    validMoves.Add(nextPos);
-                }
-            }
+            currentPos = validMoves.OrderBy(move =>
+                Random.Range(0, 2) == 0 ? Vector2.Distance(move, end) : Random.Range(0, 100)).First();
 
-            // If valid moves exist, choose one
-            if (validMoves.Count > 0)
-            {
-                // Bias the direction slightly towards the endpoint to avoid the shortest path
-                Vector2 bestMove = validMoves.OrderBy(move =>
-                    Random.Range(0, 2) == 0 ? Vector2.Distance(move, end) : Random.Range(0, 100)).First();
-                currentPos = bestMove;
-                _visited.Add(currentPos);
-                stepCount++;
-            }
-            else
-            {
-                // No valid moves, end path generation
-                break;
-            }
-
-            currentNumber++;
+            visited.Add(currentPos);
+            stepCount++;
         }
 
-        // Check if the path satisfies the minimum steps and end-point criteria
         if ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
         {
             FillBoardWithNumbers(); // Retry generation
+            return;
         }
-        else
+
+        // Ensure the last required number is placed
+        visited.Remove(visited.Last());
+        RequireNumber(visited.Last());
+        _finalNr = _int_board[(int) visited.Last().x, (int) visited.Last().y];
+        visited.Remove(visited.Last());
+
+        for (int i = 0; i < Random.Range(1, 3); i++)
         {
-            _visited.Remove(_visited.Last());
-            RequireNumber(_visited.Last());
-            _finalNr = _int_board[(int)_visited.Last().x, (int)_visited.Last().y];
-            _visited.Remove(_visited.Last());
-            for (int i = 0; i < Random.Range(1,3); i++)
-            {
-                int index = Random.Range(0, _visited.Count - 1);
-                RequireNumber(_visited[index]);
-                _visited.Remove(_visited[index]);
-            }
+            int index = Random.Range(0, visited.Count);
+            RequireNumber(visited.ElementAt(index));
+            visited.Remove(visited.ElementAt(index));
         }
     }
+    
+    private Vector2 GetRandomPosition(int rows, int cols)
+    {
+        return new Vector2(Random.Range(0, rows), Random.Range(0, cols));
+    }
+    
+    private List<Vector2> GetValidMoves(Vector2 currentPos, Vector2[] directions, int rows, int cols,
+        HashSet<Vector2> visited)
+    {
+        List<Vector2> validMoves = new List<Vector2>();
+
+        foreach (var direction in directions)
+        {
+            Vector2 nextPos = currentPos + direction;
+            if (nextPos.x >= 0 && nextPos.x < rows && nextPos.y >= 0 && nextPos.y < cols && !visited.Contains(nextPos))
+            {
+                validMoves.Add(nextPos);
+            }
+        }
+
+        return validMoves;
+    }
+
 
     private void RequireNumber(Vector2 pos)
     {
-        _board[(int)pos.x, (int)pos.y].Q<Label>().text = _int_board[(int)pos.x, (int)pos.y].ToString();
-        _board[(int)pos.x, (int)pos.y].Q<Label>().AddToClassList("required");
+        _board[(int) pos.x, (int) pos.y].Q<Label>().text = _int_board[(int) pos.x, (int) pos.y].ToString();
+        _board[(int) pos.x, (int) pos.y].Q<Label>().AddToClassList("required");
     }
+
     public VisualElement[,] ConvertListToMatrix(List<VisualElement> inputList)
     {
         // Check if the list has a perfect square number of elements

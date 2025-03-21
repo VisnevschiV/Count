@@ -79,20 +79,27 @@ VisualElement {
     color: rgb(237, 255, 236);
 }
 
-#popUp {
+.popUp {
     position: absolute;
-    background-color: rgba(90, 87, 102, 0.93);
-    width: 80%;
-    height: 30%;
-    top: 30%;
-    left: 10%;
-    right: auto;
-    bottom: auto;
-    border-top-left-radius: 100px;
-    border-top-right-radius: 100px;
-    border-bottom-right-radius: 100px;
-    border-bottom-left-radius: 100px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     align-items: center;
+    align-content: center;
+    justify-content: space-around;
+}
+
+.popUp > VisualElement {
+    width: 96%;
+    height: 55%;
+    background-color: rgba(0, 0, 0, 0.79);
+    border-top-left-radius: 58px;
+    border-top-right-radius: 58px;
+    border-bottom-right-radius: 58px;
+    border-bottom-left-radius: 58px;
+    align-items: center;
+    justify-content: space-around;
 }
 
 .titleText {

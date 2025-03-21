@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public UIDocument uiDocument;
     public AudioManager audioManager;
+    public GameObject menu;
     
     
     [SerializeField]
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour
     private VisualElement _rootVisualElement;
     private Label _lvlLabel;
     private VisualElement _winPopUp;
+    private VisualElement _timeOverPopUp;
     
     private int _lvl = 1;
     
@@ -36,8 +38,10 @@ public class GameManager : MonoBehaviour
 
 
         _lvlLabel = _rootVisualElement.Q<Label>("lvl");
-        _winPopUp = _rootVisualElement.Q<VisualElement>("popUp");
+        _winPopUp = _rootVisualElement.Q<VisualElement>("winPopUp");
+        _timeOverPopUp = _rootVisualElement.Q<VisualElement>("timeOverPopUp");
         _winPopUp.Q<Button>().clicked += StartNewGame;
+        _timeOverPopUp.Q<Button>().clicked += Home;
         _rootVisualElement.Query<Button>("restart").First().clicked += StartNewGame;
         _rootVisualElement.Query<Button>("clear").First().clicked += _boardManager.ClearPlacedNumbers;
         _rootVisualElement.Query<Button>("help").First().clicked += _boardManager.Help;
@@ -45,7 +49,8 @@ public class GameManager : MonoBehaviour
         _rootVisualElement.Query<Button>("sound").First().clicked += audioManager.ToggleSound;
         
         StartNewGame();
-        _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 120);
+        _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 20);
+        _timer.OnTimeExpired += TimeOver;
     }
     
     private void Update()
@@ -60,8 +65,14 @@ public class GameManager : MonoBehaviour
         _winPopUp.style.display = DisplayStyle.Flex;
         _lvl++;
         _lvlLabel.text = "Lvl" + _lvl;
+        _timer.AddTime(5);
     }
     
+    private void Home()
+    {
+        menu.SetActive(true);
+        gameObject.SetActive(false);
+    }
     
     private void StartNewGame()
     {
@@ -87,6 +98,7 @@ public class GameManager : MonoBehaviour
 
     private void TimeOver()
     {
-        
+        _timeOverPopUp.style.display = DisplayStyle.Flex;
+        _timeOverPopUp.Q<Label>("score").text = "Score: " + _lvl;
     }
 }

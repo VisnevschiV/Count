@@ -71,8 +71,18 @@
             <engine:Button enable-rich-text="false" name="restart" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/reload.png?fileID=2800000&amp;guid=58a00eb8ad15f41ae991ab60af79a623&amp;type=3#reload&quot;); background-size: 70% 70%;" />
         </engine:VisualElement>
     </engine:VisualElement>
-    <engine:VisualElement name="popUp" style="flex-grow: 1; display: none;">
-        <engine:Label text="WIN" enable-rich-text="false" class="titleText white" />
-        <engine:Button text="Next" style="background-color: rgb(97, 231, 134); width: 413px; height: 136px; margin-top: 154px; margin-right: 154px; margin-bottom: 154px; margin-left: 154px; border-top-left-radius: 45px; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 45px; font-size: 65px; -unity-font-style: bold;" />
+    <engine:VisualElement name="winPopUp" class="popUp" style="display: none;">
+        <engine:VisualElement>
+            <engine:Label text="WIN" enable-rich-text="false" class="titleText white" />
+            <engine:Button text="Next" style="background-color: rgb(97, 231, 134); width: 413px; height: 136px; margin-top: 154px; margin-right: 154px; margin-bottom: 154px; margin-left: 154px; border-top-left-radius: 45px; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 45px; font-size: 65px; -unity-font-style: bold;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+    <engine:VisualElement name="timeOverPopUp" class="popUp" style="display: none;">
+        <engine:VisualElement>
+            <engine:Label text="Time Over" class="white titleText" style="font-size: 184px;" />
+            <engine:Label text="Record: 7" name="LastRecord" style="font-size: 93px; color: rgba(255, 255, 255, 0.36); -unity-font-style: bold;" />
+            <engine:Label text="Score: 20" name="score" class="white titleText" style="font-size: 124px; color: rgba(237, 255, 236, 0.77);" />
+            <engine:Button text="Home" style="background-color: rgb(97, 231, 134); width: 413px; height: 136px; margin-top: 154px; margin-right: 154px; margin-bottom: 154px; margin-left: 154px; border-top-left-radius: 45px; border-top-right-radius: 45px; border-bottom-right-radius: 45px; border-bottom-left-radius: 45px; font-size: 65px; -unity-font-style: bold;" />
+        </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>

@@ -144,25 +144,33 @@ public class BoardManager : MonoBehaviour
 
     public void Help()
     {
-        if (_visited.Count > 1)
-        {
-            List<Vector2> local = _visited;
+        Debug.Log("Help");
 
-            while (local.Count > 1)
+        if (_visited.Count > 0)
+        {
+            List<Vector2> local = new List<Vector2>(_visited); // Copy _visited to avoid modifying while iterating
+
+            while (local.Count > 0)
             {
-                int index = Random.Range(0, local.Count - 1);
-                if (_board[(int) local[index].x, (int) local[index].y].Q<Label>().text == "")
+                int index = Random.Range(0, local.Count); // Pick a random index
+                Vector2 pos = local[index];
+
+                Label label = _board[(int)pos.x, (int)pos.y].Q<Label>();
+
+                // Check if the cell is empty before placing a number
+                if (string.IsNullOrEmpty(label.text))
                 {
-                    _board[(int) local[index].x, (int) local[index].y].Q<Label>().text =
-                        _int_board[(int) local[index].x, (int) local[index].y].ToString();
-                    _visited.Remove(_visited[index]);
+                    label.text = _int_board[(int)pos.x, (int)pos.y].ToString();
+                    label.AddToClassList("required"); // Mark it as required
+                    _visited.Remove(pos); // Remove from visited since it's now placed
                     return;
                 }
 
-                local.Remove(local[index]);
+                local.RemoveAt(index); // Remove the checked position
             }
         }
     }
+
 
 
     private void ClearBoard()
@@ -217,68 +225,80 @@ public class BoardManager : MonoBehaviour
     }
 
     public void FillBoardWithNumbers()
+{
+    ClearBoard();
+
+    int rows = _board.GetLength(0);
+    int cols = _board.GetLength(1);
+    _int_board = new int[rows, cols];
+    _visited.Clear(); // Ensure it's fresh
+
+    int minSteps = rows * cols - Random.Range(1, 4);
+    int maxNumbers = _boardSize * _boardSize;
+
+    Vector2[] directions = new Vector2[]
     {
-        ClearBoard();
+        new Vector2(1, 0), // Down
+        new Vector2(-1, 0), // Up
+        new Vector2(0, 1), // Right
+        new Vector2(0, -1) // Left
+    };
 
-        int rows = _board.GetLength(0);
-        int cols = _board.GetLength(1);
-        _int_board = new int[rows, cols];
+    Vector2 start, end;
+    do
+    {
+        start = GetRandomPosition(rows, cols);
+        end = GetRandomPosition(rows, cols);
+    } while (start == end);
 
-        int minSteps = rows * cols - Random.Range(1, 4);
-        int maxNumbers = _boardSize * _boardSize;
+    Debug.Log($"Start: {start}, End: {end}");
 
-        Vector2[] directions = new Vector2[]
-        {
-            new Vector2(1, 0), // Down
-            new Vector2(-1, 0), // Up
-            new Vector2(0, 1), // Right
-            new Vector2(0, -1) // Left
-        };
+    HashSet<Vector2> visited = new HashSet<Vector2> {start};
+    Vector2 currentPos = start;
+    int currentNumber = 1, stepCount = 0;
 
-        Vector2 start, end;
-        do
-        {
-            start = GetRandomPosition(rows, cols);
-            end = GetRandomPosition(rows, cols);
-        } while (start == end);
+    while ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
+    {
+        _int_board[(int)currentPos.x, (int)currentPos.y] = currentNumber++;
+        _visited.Add(currentPos); // ✅ Ensure positions are stored
 
-        HashSet<Vector2> visited = new HashSet<Vector2> {start};
-        Vector2 currentPos = start;
-        int currentNumber = 1, stepCount = 0;
+        List<Vector2> validMoves = GetValidMoves(currentPos, directions, rows, cols, visited);
+        if (validMoves.Count == 0) break;
 
-        while ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
-        {
-            _int_board[(int) currentPos.x, (int) currentPos.y] = currentNumber++;
+        currentPos = validMoves.OrderBy(move =>
+            Random.Range(0, 2) == 0 ? Vector2.Distance(move, end) : Random.Range(0, 100)).First();
 
-            List<Vector2> validMoves = GetValidMoves(currentPos, directions, rows, cols, visited);
-            if (validMoves.Count == 0) break;
-
-            currentPos = validMoves.OrderBy(move =>
-                Random.Range(0, 2) == 0 ? Vector2.Distance(move, end) : Random.Range(0, 100)).First();
-
-            visited.Add(currentPos);
-            stepCount++;
-        }
-
-        if ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
-        {
-            FillBoardWithNumbers(); // Retry generation
-            return;
-        }
-
-        // Ensure the last required number is placed
-        visited.Remove(visited.Last());
-        RequireNumber(visited.Last());
-        _finalNr = _int_board[(int) visited.Last().x, (int) visited.Last().y];
-        visited.Remove(visited.Last());
-
-        for (int i = 0; i < Random.Range(1, 3); i++)
-        {
-            int index = Random.Range(0, visited.Count);
-            RequireNumber(visited.ElementAt(index));
-            visited.Remove(visited.ElementAt(index));
-        }
+        visited.Add(currentPos);
+        stepCount++;
     }
+
+    Debug.Log($"Final position: {currentPos}, Steps taken: {stepCount}");
+
+    if ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
+    {
+        Debug.LogWarning("Failed to create a valid path, retrying...");
+        FillBoardWithNumbers(); // Retry generation
+        return;
+    }
+
+    // Ensure the last required number is placed
+    if (_visited.Count > 1)
+    {
+        RequireNumber(_visited.Last());
+        _finalNr = _int_board[(int)_visited.Last().x, (int)_visited.Last().y];
+        _visited.RemoveAt(_visited.Count - 1);
+    }
+
+    for (int i = 0; i < Random.Range(1, 3) && _visited.Count > 0; i++)
+    {
+        int index = Random.Range(0, _visited.Count);
+        RequireNumber(_visited[index]);
+        _visited.RemoveAt(index);
+    }
+
+    Debug.Log($"_visited size after generation: {_visited.Count}");
+}
+
     
     private Vector2 GetRandomPosition(int rows, int cols)
     {

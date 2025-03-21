@@ -8,9 +8,7 @@ public class BoardManager : MonoBehaviour
 {
     // Reference to the UIDocument (which contains the UI elements)
     public UIDocument uiDocument;
-    public AudioSource click;
-    public AudioSource win;
-    public AudioSource music;
+    public AudioManager audioManager;
     private int boardSize = 3;
 
     private VisualElement rootVisualElement;
@@ -45,8 +43,8 @@ public class BoardManager : MonoBehaviour
         rootVisualElement.Query<Button>("restart").First().clicked += StartNewGame;
         rootVisualElement.Query<Button>("clear").First().clicked += Clear;
         rootVisualElement.Query<Button>("help").First().clicked += Help;
-        rootVisualElement.Query<Button>("music").First().clicked += TogleMusic;
-        rootVisualElement.Query<Button>("sound").First().clicked += TogleAudio;
+        rootVisualElement.Query<Button>("music").First().clicked += audioManager.ToggleMusic;
+        rootVisualElement.Query<Button>("sound").First().clicked += audioManager.ToggleSound;
 
         playArea = rootVisualElement.Q<VisualElement>("playArea");
 
@@ -56,7 +54,7 @@ public class BoardManager : MonoBehaviour
     // Method to handle button click events
     private void OnButtonClick(VisualElement button)
     {
-        PlayClick();
+        audioManager.PlayClick();
         Vector2 pressed = GetIndexOf(board, button);
         int numberToBePlaced = _numberPositions.Count + 1;
         Label txt = button.Q<Label>();
@@ -140,7 +138,7 @@ public class BoardManager : MonoBehaviour
     [ContextMenu("win")]
     private void Win()
     {
-        PlayWin();
+        audioManager.PlayWin();
         _winPopUp.style.display = DisplayStyle.Flex;
         lvl++;
         lvlLabel.text = "Lvl" + lvl;
@@ -148,7 +146,7 @@ public class BoardManager : MonoBehaviour
 
     private void Clear()
     {
-        PlayClick();
+        audioManager.PlayClick();
         while (_numberPositions.Count > 0)
         {
             Vector2 pos = _numberPositions.Pop();
@@ -236,22 +234,6 @@ public class BoardManager : MonoBehaviour
             }
         }
         visited.Clear();
-    }
-
-    private Vector2 FindStartPosition()
-    {
-        for (int i = 0; i < boardSize; i++)
-        {
-            for (int j = 0; j < boardSize; j++)
-            {
-                if (board[i,j].Q<Label>().text =="1")
-                {
-                    return new Vector2(i, j);
-                }
-            }
-        }
-
-        return new Vector2(-1, -1);
     }
 
     private void CreateBoard(int size)
@@ -435,73 +417,4 @@ public class BoardManager : MonoBehaviour
 
         return new Vector2(-1, -1);
     }
-
-
-    private int[,] GetMatrixAsInt(VisualElement[,] board)
-    {
-        int rows = board.GetLength(0);
-        int cols = board.GetLength(1);
-
-        int[,] matrix = new int[rows, cols];
-
-        for (int i = 0; i < rows; i++)
-        {
-            for (int j = 0; j < cols; j++)
-            {
-                VisualElement element = board[i, j];
-                string text = element?.Q<Label>()?.text; // Assuming the number is in a Label within the VisualElement
-
-                if (int.TryParse(text, out int number))
-                {
-                    matrix[i, j] = number; // Assign the parsed number
-                }
-                else
-                {
-                    matrix[i, j] = 0; // Default to 0 if parsing fails or text is empty
-                }
-            }
-        }
-
-        return matrix;
-    }
-
-    #region audio
-
-    private void PlayClick()
-    {
-        click.Play();
-    }
-
-    private void PlayWin()
-    {
-        win.Play();
-    }
-
-    private void TogleAudio()
-    {
-        if (win.volume == 0)
-        {
-            win.volume = 1;
-            click.volume = 1;
-        }
-        else
-        {
-            win.volume = 0;
-            click.volume = 0;
-        }
-    }
-
-    private void TogleMusic()
-    {
-        if (music.volume == 0)
-        {
-            music.volume = 1;
-        }
-        else
-        {
-            music.volume = 0;
-        }
-    }
-
-    #endregion
 }

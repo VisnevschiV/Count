@@ -326,6 +326,7 @@ GameObject:
   m_Component:
   - component: {fileID: 380411415}
   - component: {fileID: 380411416}
+  - component: {fileID: 380411417}
   m_Layer: 0
   m_Name: Audio
   m_TagString: Untagged
@@ -359,6 +360,21 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 380411414}
   m_Enabled: 1
+--- !u!114 &380411417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 380411414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ae117a5d7f547f448d7622dc7270422, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  click: {fileID: 56270792}
+  win: {fileID: 2031014964}
+  music: {fileID: 380558143}
 --- !u!1 &380558141
 GameObject:
   m_ObjectHideFlags: 0
@@ -553,9 +569,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiDocument: {fileID: 472645992}
-  click: {fileID: 56270792}
-  win: {fileID: 2031014964}
-  music: {fileID: 380558143}
+  audioManager: {fileID: 380411417}
 --- !u!1 &2031014962
 GameObject:
   m_ObjectHideFlags: 0

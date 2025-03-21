@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 public class BoardManager : MonoBehaviour
 {
@@ -23,6 +25,7 @@ public class BoardManager : MonoBehaviour
     private Stack<Vector2> _numberPositions = new Stack<Vector2>();
     List<Vector2> visited = new List<Vector2>();
 
+    private Timer timer = new Timer();
 
     private void OnEnable()
     {
@@ -49,6 +52,12 @@ public class BoardManager : MonoBehaviour
         playArea = rootVisualElement.Q<VisualElement>("playArea");
 
         StartNewGame();
+        timer.StartCountDown(rootVisualElement.Q<Label>("timer"), 120);
+    }
+
+    private void Update()
+    {
+        timer?.Update(Time.deltaTime);
     }
 
     // Method to handle button click events
@@ -212,6 +221,7 @@ public class BoardManager : MonoBehaviour
 
         CreateBoard(boardSize);
         FillBoardWithNumbers();
+        
     }
 
     private void ClearBoard()
@@ -362,10 +372,6 @@ public class BoardManager : MonoBehaviour
                 int index = Random.Range(0, visited.Count - 1);
                 RequireNumber(visited[index]);
                 visited.Remove(visited[index]);
-            }
-            foreach (var v in visited)
-            {
-                Debug.Log($"{int_board[(int)v.x,(int)v.y]} at {v}");
             }
         }
     }

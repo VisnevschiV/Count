@@ -48,7 +48,7 @@ public class Timer
     {
         int minutes = Mathf.FloorToInt(_remainingTime / 60);
         int seconds = Mathf.CeilToInt(_remainingTime % 60);
-
+        
         if (minutes > 0)
             _timerLabel.text = $"{minutes}:{seconds:D2}"; // Shows as "m:ss"
         else

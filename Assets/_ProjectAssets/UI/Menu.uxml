@@ -1,13 +1,28 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/_ProjectAssets/UI/Menu.uss?fileID=7433441132597879392&amp;guid=3082553d044d64293abeeeb9d893db1b&amp;type=3#Menu" />
-    <engine:VisualElement style="flex-grow: 1; color: rgb(90, 87, 102); background-color: rgb(90, 87, 102); display: flex;">
+    <engine:VisualElement style="flex-grow: 1; color: rgb(90, 87, 102); background-color: rgb(90, 87, 102); display: flex; align-items: stretch;">
         <engine:VisualElement name="logoWrapper" style="flex-grow: 1; height: 40%; width: 100%; justify-content: space-around;">
             <engine:VisualElement style="background-color: rgba(255, 0, 0, 0); width: 400px; height: 400px; background-image: url(&quot;project://database/Assets/_ProjectAssets/T/logo%20COUNT-07.png?fileID=2800000&amp;guid=f479472af9c89044eb5b28817400069e&amp;type=3#logo COUNT-07&quot;);" />
         </engine:VisualElement>
-        <engine:VisualElement name="buttonWrapper" style="flex-grow: 1; height: 60%;">
+        <engine:VisualElement name="buttonWrapper" style="flex-grow: 1; height: 60%; display: flex;">
             <engine:Label text="Label" name="record" style="font-size: 71px; color: rgba(231, 231, 231, 0.79); -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=18e088599eef64a6b90126f9890e897f&amp;type=3#NotInter-Regular&quot;);" />
             <engine:Button text="Competitive" name="Play" style="width: 587px;" />
+            <engine:Button text="Practice" name="practiceButton" style="width: 465px;" />
             <engine:Button text="How To " name="HowTo" />
+        </engine:VisualElement>
+        <engine:VisualElement name="practice" style="flex-grow: 1; height: 60%; align-items: center; justify-content: center; display: none;">
+            <engine:Button text="Easy" name="easy" class="unavailableButton">
+                <engine:Label text="Unlock in Competitive" />
+            </engine:Button>
+            <engine:Button text="medium" name="medium" class="unavailableButton">
+                <engine:Label text="Unlock in Competitive" />
+            </engine:Button>
+            <engine:Button text="Hard" name="hard" class="unavailableButton">
+                <engine:Label text="Unlock in Competitive" />
+            </engine:Button>
+            <engine:Button text="Extreme" name="extreme" class="unavailableButton">
+                <engine:Label text="Unlock in Competitive" />
+            </engine:Button>
         </engine:VisualElement>
     </engine:VisualElement>
     <engine:VisualElement name="tutorialWindow" style="display: none; background-color: rgb(90, 87, 102);">

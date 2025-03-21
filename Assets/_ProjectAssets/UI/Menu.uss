@@ -43,3 +43,24 @@ Button {
     position: absolute;
     flex-grow: 1;
 }
+
+#practice {
+}
+
+#practice > Button {
+    width: 80%;
+    height: 217px;
+}
+
+.unavailableButton > Label {
+    background-color: rgba(0, 0, 0, 0.93);
+    width: 110%;
+    flex-grow: 1;
+    height: 120%;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    color: rgb(188, 181, 181);
+}

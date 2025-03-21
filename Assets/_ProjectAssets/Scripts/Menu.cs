@@ -5,14 +5,17 @@ using UnityEngine.UIElements;
 
 public class Menu : MonoBehaviour
 {
-    
+
     public UIDocument uiDocument;
     public GameObject game;
     public TutorialData tutorialData;
     public AudioSource click;
 
     private VisualElement _tutorialWindow;
+    private VisualElement _practice;
+    private VisualElement _menu;
     private int _tutorialStep;
+
     void OnEnable()
     {
         // Ensure the UIDocument is assigned
@@ -24,16 +27,22 @@ public class Menu : MonoBehaviour
 
         // Get the root VisualElement of the UI
         VisualElement rootVisualElement = uiDocument.rootVisualElement;
-        rootVisualElement.Q<Button>("Play").clicked += Play;
+        rootVisualElement.Q<Button>("Play").clicked += PlayCompetitive;
+        rootVisualElement.Q<Button>("practiceButton").clicked += Practice;
         rootVisualElement.Q<Button>("HowTo").clicked += ActivateTutorial;
         rootVisualElement.Q<Button>("Next").clicked += TutorialNext;
         rootVisualElement.Q<Button>("Play").clicked += PlayClick;
         rootVisualElement.Q<Button>("HowTo").clicked += PlayClick;
         rootVisualElement.Q<Button>("Next").clicked += PlayClick;
-        
-        rootVisualElement.Q<Label>("record").text = "High Score: " + (PlayerPrefs.HasKey("record") ? PlayerPrefs.GetInt("record").ToString() : "0");
-        
+
+        rootVisualElement.Q<Label>("record").text = "High Score: " +
+                                                    (PlayerPrefs.HasKey("HighScore")
+                                                        ? PlayerPrefs.GetInt("HighScore").ToString()
+                                                        : "0");
+
         _tutorialWindow = rootVisualElement.Q<VisualElement>("tutorialWindow");
+        _practice = rootVisualElement.Q<VisualElement>("practice");
+        _menu = rootVisualElement.Q<VisualElement>("buttonWrapper");
     }
 
     private void PlayClick()
@@ -41,9 +50,47 @@ public class Menu : MonoBehaviour
         click.Play();
     }
 
-    private void Play(){
+    private void Practice()
+    {
+        _practice.style.display = DisplayStyle.Flex;
+        _menu.style.display = DisplayStyle.None;
+        if (PlayerPrefs.HasKey("HighScore"))
+        {
+            int highScore = PlayerPrefs.GetInt("HighScore");
+            Button button = _practice.Q<Button>("easy");
+            button.clicked += () => PlayLevel(1);
+            button.RemoveFromClassList("unavailableButton");
+            button.Q<Label>().RemoveFromHierarchy();
+            if (highScore > 4)
+            {
+                button = _practice.Q<Button>("medium");
+                button.clicked += () => PlayLevel(6);
+                button.RemoveFromClassList("unavailableButton");
+                button.Q<Label>().RemoveFromHierarchy();
+            }
+
+            if (highScore > 9)
+            {
+                button = _practice.Q<Button>("hard");
+                button.clicked += () => PlayLevel(15);
+                button.RemoveFromClassList("unavailableButton");
+                button.Q<Label>().RemoveFromHierarchy();
+            }
+
+        }
+    }
+
+    private void PlayCompetitive()
+    {
         game.SetActive(true);
-        this.gameObject.SetActive(false);
+        gameObject.SetActive(false);
+    }
+
+    private void PlayLevel(int lvl)
+    {
+        game.SetActive(true);
+        game.GetComponent<GameManager>().level = lvl;
+        gameObject.SetActive(false);
     }
 
     private void ActivateTutorial(){

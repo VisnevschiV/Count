@@ -7,7 +7,8 @@ public class GameManager : MonoBehaviour
     public UIDocument uiDocument;
     public AudioManager audioManager;
     public GameObject menu;
-    
+
+    public int level = 0;
     
     [SerializeField]
     private BoardManager _boardManager;
@@ -24,7 +25,7 @@ public class GameManager : MonoBehaviour
     
     
     
-    private void OnEnable()
+    public void OnEnableLate()
     {
         // Ensure the UIDocument is assigned
         if (uiDocument == null)
@@ -49,8 +50,17 @@ public class GameManager : MonoBehaviour
         _rootVisualElement.Query<Button>("sound").First().clicked += audioManager.ToggleSound;
         
         StartNewGame();
-        _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 20);
-        _timer.OnTimeExpired += TimeOver;
+        if (level != 0)
+        {
+            _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 20);
+            _timer.OnTimeExpired += TimeOver;
+            _lvlLabel.text = "Lvl" + _lvl;
+        }
+        else
+        {
+            _rootVisualElement.Q<Label>("timer").text = "";
+            _lvlLabel.text = "";
+        }
     }
     
     private void Update()
@@ -64,7 +74,11 @@ public class GameManager : MonoBehaviour
         audioManager.PlayWin();
         _winPopUp.style.display = DisplayStyle.Flex;
         _lvl++;
-        _lvlLabel.text = "Lvl" + _lvl;
+        if (level!=0)
+        {
+            _lvlLabel.text = "Lvl" + _lvl;
+        }
+
         _timer.AddTime(5);
         if (_lvl>10)
         {
@@ -81,12 +95,18 @@ public class GameManager : MonoBehaviour
     {
         menu.SetActive(true);
         gameObject.SetActive(false);
+        level = 0;
     }
     
     private void StartNewGame()
     {
         _winPopUp.style.display = DisplayStyle.None;
         int boardSizeX, boardSizeY;
+
+        if (level>0)
+        {
+            _lvl = level;
+        }
 
         if (_lvl < 5)
         {

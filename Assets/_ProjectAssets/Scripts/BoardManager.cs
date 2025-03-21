@@ -40,6 +40,7 @@ public class BoardManager : MonoBehaviour
         _rootVisualElement = uiDocument.rootVisualElement;
 
         _playArea = _rootVisualElement.Q<VisualElement>("playArea");
+        gameManager.OnEnableLate();
     }
 
 
@@ -53,7 +54,7 @@ public class BoardManager : MonoBehaviour
 
 
         // Undo move
-        if (_placedNumbersPositions.Count > 0 && buttonIndex == _placedNumbersPositions.Peek())
+        if (_placedNumbersPositions.Count > 0 && buttonIndex == _placedNumbersPositions.Peek() && gameManager.level != 0)
         {
             RemoveNumber(txt);
             return;

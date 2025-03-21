@@ -66,6 +66,15 @@ public class GameManager : MonoBehaviour
         _lvl++;
         _lvlLabel.text = "Lvl" + _lvl;
         _timer.AddTime(5);
+        if (_lvl>10)
+        {
+            _timer.AddTime(5);
+        }
+        if (_lvl>15)
+        {
+            _timer.AddTime(5);
+        }
+        
     }
     
     private void Home()
@@ -76,23 +85,26 @@ public class GameManager : MonoBehaviour
     
     private void StartNewGame()
     {
-        
         _winPopUp.style.display = DisplayStyle.None;
-        int boardSize;
+        int boardSizeX, boardSizeY;
+
         if (_lvl < 5)
         {
-            boardSize = 3;
+            boardSizeX = 3;
+            boardSizeY = 3;
         }
         else if (_lvl < 10)
         {
-            boardSize = 4;
+            boardSizeX = 4;
+            boardSizeY = 4;
         }
         else
         {
-            boardSize = 5;
+            boardSizeX = Random.Range(3, 7);  // Random X size between 3 and 6
+            boardSizeY = Random.Range(3, 7);   // Random Y size between 3 and 6
         }
-
-        _boardManager.CreateBoard(boardSize);
+    
+        _boardManager.CreateBoard(boardSizeX, boardSizeY);
         _boardManager.FillBoardWithNumbers();
     }
 

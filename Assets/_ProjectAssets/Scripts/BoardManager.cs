@@ -197,16 +197,17 @@ public class BoardManager : MonoBehaviour
         _visited.Clear();
     }
 
-    public void CreateBoard(int size)
+    public void CreateBoard(int rows, int cols)
     {
-        _boardSize = size;
+        _boardSize = Mathf.Max(rows, cols); // Store the largest dimension for scaling
         _playArea.Clear();
-        for (int i = 0; i < size * size; i++)
+
+        for (int i = 0; i < rows * cols; i++)
         {
             VisualElement btn = new VisualElement();
             btn.AddToClassList("button");
-            btn.style.width = (1000 / size) - 5;
-            btn.style.height = (1000 / size) - 5;
+            btn.style.width = (1000 / cols) - 5; // Adjust width based on columns
+            btn.style.height = (1000 / rows) - 5; // Adjust height based on rows
             Label label = new Label();
             label.AddToClassList("nrLabel");
             btn.Add(label);
@@ -214,14 +215,15 @@ public class BoardManager : MonoBehaviour
             btn.RegisterCallback<ClickEvent>(e => OnButtonClick(btn));
         }
 
-        ReadBoard();
+        ReadBoard(rows, cols);
     }
 
-    private void ReadBoard()
+    private void ReadBoard(int rows, int cols)
     {
         var buttons = _playArea.Query<VisualElement>().Class("button").ToList();
-        _board = ConvertListToMatrix(buttons);
+        _board = ConvertListToMatrix(buttons, rows, cols);
     }
+
 
     public void FillBoardWithNumbers()
     {
@@ -321,26 +323,20 @@ public class BoardManager : MonoBehaviour
         _board[(int) pos.x, (int) pos.y].Q<Label>().AddToClassList("required");
     }
 
-    public VisualElement[,] ConvertListToMatrix(List<VisualElement> inputList)
+    public VisualElement[,] ConvertListToMatrix(List<VisualElement> inputList, int rows, int cols)
     {
-        // Check if the list has a perfect square number of elements
-        int count = inputList.Count;
-        int size = (int) Mathf.Sqrt(count);
-
-        if (size * size != count)
+        if (inputList.Count != rows * cols)
         {
-            Debug.LogError($"List must contain a perfect square number of elements to form a {size}x{size} matrix.");
+            Debug.LogError($"The list must contain exactly {rows * cols} elements to form a {rows}x{cols} matrix.");
             return null;
         }
 
-        // Create a square matrix with dimensions size x size
-        VisualElement[,] matrix = new VisualElement[size, size];
+        VisualElement[,] matrix = new VisualElement[rows, cols];
 
-        // Fill the matrix with the elements of the list
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < inputList.Count; i++)
         {
-            int row = i / size; // Integer division for rows
-            int col = i % size; // Modulo operation for columns
+            int row = i / cols; // Integer division for rows
+            int col = i % cols; // Modulo operation for columns
             matrix[row, col] = inputList[i];
         }
 

@@ -67,8 +67,14 @@
             <engine:Button enable-rich-text="false" name="help" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/light-bulb.png?fileID=2800000&amp;guid=e7ad4951c7ec1434d85563d8cc14409d&amp;type=3#light-bulb&quot;); background-size: 70% 70%;">
                 <engine:VisualElement style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/multimedia.png?fileID=2800000&amp;guid=95cdf5203c88e2240a16b9c7a1326a57&amp;type=3#multimedia&quot;); width: 90px; height: 88px; left: 65px; top: 44px;" />
             </engine:Button>
-            <engine:Button enable-rich-text="false" name="clear" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/clear.png?fileID=2800000&amp;guid=6cc15be2e383c574e978865b65be8cb2&amp;type=3#clear&quot;); background-size: 70% 70%;" />
-            <engine:Button enable-rich-text="false" name="restart" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/reload.png?fileID=2800000&amp;guid=58a00eb8ad15f41ae991ab60af79a623&amp;type=3#reload&quot;); background-size: 70% 70%;" />
+            <engine:Button enable-rich-text="false" name="clear" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/clear.png?fileID=2800000&amp;guid=6cc15be2e383c574e978865b65be8cb2&amp;type=3#clear&quot;); background-size: 70% 70%;">
+                <engine:VisualElement style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/multimedia.png?fileID=2800000&amp;guid=95cdf5203c88e2240a16b9c7a1326a57&amp;type=3#multimedia&quot;); width: 90px; height: 88px; left: 65px; top: 44px;" />
+            </engine:Button>
+            <engine:Button enable-rich-text="false" name="restart" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/reload.png?fileID=2800000&amp;guid=58a00eb8ad15f41ae991ab60af79a623&amp;type=3#reload&quot;); background-size: 70% 70%;">
+                <engine:VisualElement style="background-image: none; width: 90px; height: 88px; left: 65px; top: 44px; background-color: rgb(178, 170, 134); border-top-left-radius: 63px; border-top-right-radius: 63px; border-bottom-right-radius: 63px; border-bottom-left-radius: 63px;">
+                    <engine:Label text="3" name="restartsAvailable" style="font-size: 61px; -unity-font-style: bold; color: rgb(0, 0, 0);" />
+                </engine:VisualElement>
+            </engine:Button>
         </engine:VisualElement>
     </engine:VisualElement>
     <engine:VisualElement name="winPopUp" class="popUp" style="display: none;">

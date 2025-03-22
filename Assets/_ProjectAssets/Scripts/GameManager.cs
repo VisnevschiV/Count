@@ -16,10 +16,12 @@ public class GameManager : MonoBehaviour
     
     private VisualElement _rootVisualElement;
     private Label _lvlLabel;
+    private Label _restartsNrLabel;
     private VisualElement _winPopUp;
     private VisualElement _timeOverPopUp;
     
     private int _lvl = 1;
+    private int _restartsAvaialble = 3;
     
     private Timer _timer = new Timer();
     
@@ -43,12 +45,15 @@ public class GameManager : MonoBehaviour
         _timeOverPopUp = _rootVisualElement.Q<VisualElement>("timeOverPopUp");
         _winPopUp.Q<Button>().clicked += StartNewGame;
         _timeOverPopUp.Q<Button>().clicked += Home;
-        _rootVisualElement.Query<Button>("restart").First().clicked += StartNewGame;
+        _rootVisualElement.Query<Button>("restart").First().clicked += RestartLevelOnClick;
         _rootVisualElement.Query<Button>("clear").First().clicked += _boardManager.ClearPlacedNumbers;
         _rootVisualElement.Query<Button>("help").First().clicked += _boardManager.Help;
         _rootVisualElement.Query<Button>("music").First().clicked += audioManager.ToggleMusic;
         _rootVisualElement.Query<Button>("sound").First().clicked += audioManager.ToggleSound;
+        _restartsNrLabel= _rootVisualElement.Query<Label>("restartsAvailable");
         
+        _restartsAvaialble = 3;
+        _restartsNrLabel.text =_restartsAvaialble.ToString();
         StartNewGame();
         if (level == 0)
         {
@@ -96,6 +101,18 @@ public class GameManager : MonoBehaviour
         menu.SetActive(true);
         gameObject.SetActive(false);
         level = 0;
+    }
+
+    private void RestartLevelOnClick()
+    {
+        
+        if (_restartsAvaialble > 0)
+        {
+            StartNewGame();
+            _restartsAvaialble--;
+            _restartsNrLabel.text =_restartsAvaialble.ToString();
+        }
+        
     }
     
     private void StartNewGame()

@@ -145,7 +145,6 @@ public class BoardManager : MonoBehaviour
 
     public void Help()
     {
-        Debug.Log("Help");
 
         if (_visited.Count > 0)
         {

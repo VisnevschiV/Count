@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
         _rootVisualElement.Query<Button>("sound").First().clicked += audioManager.ToggleSound;
         
         StartNewGame();
-        if (level != 0)
+        if (level == 0)
         {
             _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 20);
             _timer.OnTimeExpired += TimeOver;
@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
         audioManager.PlayWin();
         _winPopUp.style.display = DisplayStyle.Flex;
         _lvl++;
-        if (level!=0)
+        if (level==0)
         {
             _lvlLabel.text = "Lvl" + _lvl;
         }

@@ -88,8 +88,8 @@ public class Menu : MonoBehaviour
 
     private void PlayLevel(int lvl)
     {
-        game.SetActive(true);
         game.GetComponent<GameManager>().level = lvl;
+        game.SetActive(true);
         gameObject.SetActive(false);
     }
 

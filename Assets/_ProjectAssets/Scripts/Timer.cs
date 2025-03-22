@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -27,6 +28,7 @@ public class Timer
     {
         _remainingTime += seconds;
         UpdateLabel();
+        AnimateColor(Color.green);
     }
 
     public void Update(float deltaTime)
@@ -49,9 +51,81 @@ public class Timer
         int minutes = Mathf.FloorToInt(_remainingTime / 60);
         int seconds = Mathf.CeilToInt(_remainingTime % 60);
         
-        if (minutes > 0)
-            _timerLabel.text = $"{minutes}:{seconds:D2}"; // Shows as "m:ss"
+        if (minutes > 0){
+            if (_timerLabel.text != $"{minutes}:{seconds:D2}")
+            {
+                AnimateFontSize();
+                AudioManager.Instance.PlayTimer();
+            }
+            _timerLabel.text = $"{minutes}:{seconds:D2}"; 
+        }
         else
-            _timerLabel.text = seconds.ToString(); // Shows just "s" when less than a minute
+        {
+            if (_timerLabel.text != seconds.ToString())
+            {
+               AnimateFontSize();
+               ShakeLabel();
+               AudioManager.Instance.PlayTimer();
+               if (seconds < 10)
+               {
+                   AnimateColor(Color.red);
+               }
+            }
+            _timerLabel.text = seconds.ToString();
+        }
+
+       
     }
+    
+    private async void AnimateFontSize()
+    {
+        // Remove any existing transition classes
+        _timerLabel.RemoveFromClassList("font-shrink");
+        _timerLabel.AddToClassList("font-grow");
+
+        // Increase font size
+        _timerLabel.style.fontSize = _timerLabel.resolvedStyle.fontSize - 10;
+
+        await Task.Delay(900);
+
+        // Switch to shrink transition
+        _timerLabel.RemoveFromClassList("font-grow");
+        _timerLabel.AddToClassList("font-shrink");
+
+        // Decrease font size
+        _timerLabel.style.fontSize = _timerLabel.resolvedStyle.fontSize + 10;
+    }
+    
+    private void ShakeLabel()
+    {
+        float shakeAngle = 5f; // Rotation angle
+        float duration = 0.15f; // Total duration
+
+        // First shake (left)
+        _timerLabel.style.rotate = new Rotate(new Angle(-shakeAngle));
+        _timerLabel.schedule.Execute(() =>
+        {
+            // Second shake (right)
+            _timerLabel.style.rotate = new Rotate(new Angle(shakeAngle));
+        }).StartingIn((long)(duration / 3 * 1000));
+
+        _timerLabel.schedule.Execute(() =>
+        {
+            // Reset to normal
+            _timerLabel.style.rotate = new Rotate(new Angle(0));
+        }).StartingIn((long)(2 * duration / 3 * 1000));
+    }
+    
+    private void AnimateColor(Color targetColor)
+    {
+        // Change to green
+        _timerLabel.style.color = targetColor;
+        
+        // Revert after 0.3s
+        _timerLabel.schedule.Execute(() =>
+        {
+            _timerLabel.style.color =  StyleKeyword.Null;
+        }).StartingIn(300);
+    }
+
 }

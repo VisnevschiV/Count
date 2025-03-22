@@ -145,5 +145,6 @@ public class GameManager : MonoBehaviour
         }
         _timeOverPopUp.style.display = DisplayStyle.Flex;
         _timeOverPopUp.Q<Label>("score").text = "Score: " + _lvl;
+        audioManager.PlayGameOver();
     }
 }

@@ -5,6 +5,16 @@ VisualElement {
     height: 40%;
 }
 
+.font-grow {
+    transition: font-size 0.3s ease-out;
+    transition-duration: 0.1s;
+}
+
+.font-shrink {
+    transition: font-size 0.6s ease-in;
+    transition-duration: 0.9s;
+}
+
 .button {
     background-color: rgba(151, 146, 227, 0.91);
     align-items: center;

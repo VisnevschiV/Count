@@ -1,15 +1,15 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/_ProjectAssets/UI/InGame.uss?fileID=7433441132597879392&amp;guid=ba7ff38cf0ec54d71bff08bdf6fdbb20&amp;type=3#InGame" />
     <engine:VisualElement name="root" class="violet" style="flex-grow: 1;">
-        <engine:VisualElement name="topBar" style="flex-grow: 1;">
-            <engine:VisualElement name="top" style="flex-grow: 1; flex-direction: row; align-items: flex-start; justify-content: space-around; padding-top: 121px; flex-wrap: wrap;">
+        <engine:VisualElement name="topBar" style="height: 710px;">
+            <engine:VisualElement name="top" style="flex-direction: row; align-items: flex-start; justify-content: space-around; padding-top: 121px; flex-wrap: wrap; height: 497px;">
                 <engine:Label text="Lvl1" name="lvl" class="white" />
                 <engine:VisualElement name="audioButtons" style="width: 30%; flex-direction: row; justify-content: space-around; align-items: center; height: 35%;">
                     <engine:Button text="&#10;" name="sound" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/volume.png?fileID=2800000&amp;guid=eb2cf486ccd1ec64490cc0f59d067616&amp;type=3#volume&quot;);" />
                     <engine:Button name="music" style="background-image: url(&quot;project://database/Assets/_ProjectAssets/T/musical-note.png?fileID=2800000&amp;guid=1ea8d83b65660d042ae88086fcdf7e41&amp;type=3#musical-note&quot;);" />
                 </engine:VisualElement>
             </engine:VisualElement>
-            <engine:Label text="15:00" name="timer" class="white" style="font-size: 147px; -unity-text-align: upper-center; -unity-font-style: bold; transition-property: font-size; transition-duration: 0.5s; transition-timing-function: ease-in-out-bounce;" />
+            <engine:Label text="15:00" name="timer" class="white" style="font-size: 130px; -unity-text-align: upper-center; -unity-font-style: bold;" />
         </engine:VisualElement>
         <engine:VisualElement name="mid" style="flex-grow: 1; align-items: center; justify-content: space-around;">
             <engine:VisualElement name="playArea">

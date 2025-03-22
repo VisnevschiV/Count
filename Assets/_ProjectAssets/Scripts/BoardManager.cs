@@ -202,21 +202,40 @@ public class BoardManager : MonoBehaviour
         _boardSize = Mathf.Max(rows, cols); // Store the largest dimension for scaling
         _playArea.Clear();
 
+        float containerWidth = _playArea.resolvedStyle.width;
+        float containerHeight = _playArea.resolvedStyle.height;
+
+        float spacing = 5f; // Adjust the spacing between elements
+
+        // Calculate the max square size while maintaining spacing
+        float totalSpacingX = (cols - 1) * spacing;
+        float totalSpacingY = (rows - 1) * spacing;
+        float squareSizeX = (containerWidth - totalSpacingX) / cols;
+        float squareSizeY = (containerHeight - totalSpacingY) / rows;
+        float squareSize = Mathf.Min(squareSizeX, squareSizeY); // Ensure squares
+
         for (int i = 0; i < rows * cols; i++)
         {
             VisualElement btn = new VisualElement();
             btn.AddToClassList("button");
-            btn.style.width = (1000 / cols) - 5; // Adjust width based on columns
-            btn.style.height = (1000 / rows) - 5; // Adjust height based on rows
+        
+            btn.style.width = squareSize;
+            btn.style.height = squareSize;
+        
+            btn.style.marginRight = (i % cols == cols - 1) ? 0 : spacing;
+            btn.style.marginBottom = (i / cols == rows - 1) ? 0 : spacing;
+
             Label label = new Label();
             label.AddToClassList("nrLabel");
             btn.Add(label);
+        
             _playArea.Add(btn);
             btn.RegisterCallback<ClickEvent>(e => OnButtonClick(btn));
         }
 
         ReadBoard(rows, cols);
     }
+
 
     private void ReadBoard(int rows, int cols)
     {

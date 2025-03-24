@@ -593,6 +593,7 @@ MonoBehaviour:
   menu: {fileID: 250738890}
   level: 0
   _boardManager: {fileID: 472645994}
+  tutorialActive: 0
 --- !u!1 &1350582916
 GameObject:
   m_ObjectHideFlags: 0

@@ -27,6 +27,8 @@ VisualElement {
     border-bottom-left-radius: 26px;
     color: rgb(72, 67, 92);
     text-shadow: 10px 10px 5px rgba(90, 87, 102, 0.94);
+    transition-property: background-color;
+    transition-duration: 0.9s;
 }
 
 #playArea {

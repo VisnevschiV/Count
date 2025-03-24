@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
@@ -23,7 +24,7 @@ public class BoardManager : MonoBehaviour
     private int[,] _int_board;
     private Vector2 _lastClicked = new Vector2(-1, -1);
     private Stack<Vector2> _placedNumbersPositions = new Stack<Vector2>();
-    private List<Vector2> _visited = new List<Vector2>();
+    private List<Vector2> _hintPositions = new List<Vector2>();
 
 
     private void OnEnable()
@@ -150,9 +151,9 @@ public class BoardManager : MonoBehaviour
     public void Help()
     {
 
-        if (_visited.Count > 0)
+        if (_hintPositions.Count > 0)
         {
-            List<Vector2> local = new List<Vector2>(_visited); // Copy _visited to avoid modifying while iterating
+            List<Vector2> local = new List<Vector2>(_hintPositions); // Copy _visited to avoid modifying while iterating
 
             while (local.Count > 0)
             {
@@ -166,7 +167,7 @@ public class BoardManager : MonoBehaviour
                 {
                     label.text = _int_board[(int) pos.x, (int) pos.y].ToString();
                     label.AddToClassList("required"); // Mark it as required
-                    _visited.Remove(pos); // Remove from visited since it's now placed
+                    _hintPositions.Remove(pos); // Remove from visited since it's now placed
                     return;
                 }
 
@@ -177,22 +178,33 @@ public class BoardManager : MonoBehaviour
 
     public void TutorialStep()
     {
-        if (_visited.Count > 0)
+        if (_hintPositions.Count > 0)
         {
             int nextNumber = _placedNumbersPositions.Count + 1;
 
-            foreach (Vector2 pos in _visited)
+            foreach (Vector2 pos in _hintPositions)
             {
                 Label label = _board[(int)pos.x, (int)pos.y].Q<Label>();
 
                 if (string.IsNullOrEmpty(label.text) && _int_board[(int)pos.x, (int)pos.y] == nextNumber)
                 {
-                    label.text = nextNumber.ToString();
-                    label.AddToClassList("required");
-                    _visited.Remove(pos);
+                    TutorialAnimationButton(label.parent);
+                    _hintPositions.Remove(pos);
                     return;
                 }
             }
+        }
+    }
+    
+    private async void TutorialAnimationButton(VisualElement button)
+    {
+        button.style.backgroundColor = new StyleColor(Color.yellow);
+        await Task.Delay(1000);
+        button.style.backgroundColor = StyleKeyword.Null;
+        await Task.Delay(1000);
+        if (button.Q<Label>().text == "")
+        {
+            TutorialAnimationButton(button);
         }
     }
 
@@ -219,7 +231,7 @@ public class BoardManager : MonoBehaviour
 
         _placedNumbersPositions.Clear();
         _lastClicked = new Vector2(-1, -1);
-        _visited.Clear();
+        _hintPositions.Clear();
     }
 
     public void CreateBoard(int rows, int cols)
@@ -276,7 +288,7 @@ public class BoardManager : MonoBehaviour
         int rows = _board.GetLength(0);
         int cols = _board.GetLength(1);
         _int_board = new int[rows, cols];
-        _visited.Clear(); // Ensure it's fresh
+        _hintPositions.Clear(); // Ensure it's fresh
 
         int minSteps = rows * cols - Random.Range(1, 4);
         int maxNumbers = _boardSize * _boardSize;
@@ -303,7 +315,7 @@ public class BoardManager : MonoBehaviour
         while ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
         {
             _int_board[(int) currentPos.x, (int) currentPos.y] = currentNumber++;
-            _visited.Add(currentPos); // ✅ Ensure positions are stored
+            _hintPositions.Add(currentPos); // ✅ Ensure positions are stored
 
             List<Vector2> validMoves = GetValidMoves(currentPos, directions, rows, cols, visited);
             if (validMoves.Count == 0) break;
@@ -322,18 +334,18 @@ public class BoardManager : MonoBehaviour
         }
 
         // Ensure the last required number is placed
-        if (_visited.Count > 1)
+        if (_hintPositions.Count > 1)
         {
-            RequireNumber(_visited.Last());
-            _finalNr = _int_board[(int) _visited.Last().x, (int) _visited.Last().y];
-            _visited.RemoveAt(_visited.Count - 1);
+            RequireNumber(_hintPositions.Last());
+            _finalNr = _int_board[(int) _hintPositions.Last().x, (int) _hintPositions.Last().y];
+            _hintPositions.RemoveAt(_hintPositions.Count - 1);
         }
 
-        for (int i = 0; i < Random.Range(1, 3) && _visited.Count > 0; i++)
+        for (int i = 0; i < Random.Range(1, 3) && _hintPositions.Count > 0; i++)
         {
-            int index = Random.Range(0, _visited.Count);
-            RequireNumber(_visited[index]);
-            _visited.RemoveAt(index);
+            int index = Random.Range(0, _hintPositions.Count);
+            RequireNumber(_hintPositions[index]);
+            _hintPositions.RemoveAt(index);
         }
     }
 

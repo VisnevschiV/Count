@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 public class Timer 
 {
     private Label _timerLabel;
-    private float _remainingTime;
+    public float remainingTime;
     private bool _isRunning;
     
     public event Action OnTimeExpired;
@@ -15,7 +15,7 @@ public class Timer
     {
         _isRunning = true;
         _timerLabel = timerLabel;
-        _remainingTime = seconds;
+        remainingTime = seconds;
         UpdateLabel();
     }
 
@@ -23,10 +23,15 @@ public class Timer
     {
         _isRunning = false;
     }
+    
+    public void Continue()
+    {
+        _isRunning = true;
+    }
 
     public void AddTime(int seconds)
     {
-        _remainingTime += seconds;
+        remainingTime += seconds;
         UpdateLabel();
         AnimateColor(Color.green);
     }
@@ -35,12 +40,12 @@ public class Timer
     {
         if (!_isRunning) return;
 
-        _remainingTime -= deltaTime;
+        remainingTime -= deltaTime;
         UpdateLabel();
 
-        if (_remainingTime <= 0)
+        if (remainingTime <= 0)
         {
-            _remainingTime = 0;
+            remainingTime = 0;
             _isRunning = false;
             OnTimeExpired?.Invoke();
         }
@@ -48,8 +53,8 @@ public class Timer
 
     private void UpdateLabel()
     {
-        int minutes = Mathf.FloorToInt(_remainingTime / 60);
-        int seconds = Mathf.CeilToInt(_remainingTime % 60);
+        int minutes = Mathf.FloorToInt(remainingTime / 60);
+        int seconds = Mathf.CeilToInt(remainingTime % 60);
         
         if (minutes > 0){
             if (_timerLabel.text != $"{minutes}:{seconds:D2}")

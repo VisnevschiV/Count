@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
         _rootVisualElement.Query<Button>("help").First().clicked += Help;
         _rootVisualElement.Query<Button>("music").First().clicked += audioManager.ToggleMusic;
         _rootVisualElement.Query<Button>("sound").First().clicked += audioManager.ToggleSound;
+        _rootVisualElement.Query<Button>("back").First().clicked += Back;
         _restartsNrLabel= _rootVisualElement.Query<Label>("restartsAvailable");
         _helpNrLabel = _rootVisualElement.Query<Label>("helpAvailable");
         _clearNrLabel = _rootVisualElement.Query<Label>("clearsAvailable");
@@ -113,10 +114,25 @@ public class GameManager : MonoBehaviour
         level = 0;
     }
 
+    private void Back()
+    {
+        _timer.Stop();
+        TimeOver();
+    }
+
     private void ContinueGame()
     {
-        _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 20);
-        _timeOverPopUp.style.display = DisplayStyle.None;
+        if (_timer.remainingTime<1)
+        {
+            _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 20);
+            _timeOverPopUp.style.display = DisplayStyle.None;
+        }
+        else
+        {
+            _timeOverPopUp.style.display = DisplayStyle.None;
+            _timer.Continue();
+        }
+        
     }
     private void RestartLevelOnClick()
     {

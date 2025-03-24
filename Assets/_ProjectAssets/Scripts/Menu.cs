@@ -34,6 +34,7 @@ public class Menu : MonoBehaviour
         rootVisualElement.Q<Button>("Play").clicked += PlayClick;
         rootVisualElement.Q<Button>("HowTo").clicked += PlayClick;
         rootVisualElement.Q<Button>("Next").clicked += PlayClick;
+        rootVisualElement.Q<Button>("home").clicked += Home;
 
         rootVisualElement.Q<Label>("record").text = "High Score: " +
                                                     (PlayerPrefs.HasKey("HighScore")
@@ -78,6 +79,12 @@ public class Menu : MonoBehaviour
             }
 
         }
+    }
+    
+    private void Home()
+    {
+        _practice.style.display = DisplayStyle.None;
+        _menu.style.display = DisplayStyle.Flex;
     }
 
     private void PlayCompetitive()

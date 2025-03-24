@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour
     
     private Timer _timer = new Timer();
     
+    public bool tutorialActive = false;
+    
     
     
     public void OnEnableLate()
@@ -70,7 +72,10 @@ public class GameManager : MonoBehaviour
         {
             _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 40);
             _timer.OnTimeExpired += TimeOver;
+            _timer.Stop();
             _lvlLabel.text = "Lvl" + _lvl;
+            tutorialActive = true;
+            TutorialStep();
         }
         else
         {
@@ -87,6 +92,11 @@ public class GameManager : MonoBehaviour
     [ContextMenu("win")]
     public void Win()
     {
+        if (tutorialActive)
+        {
+            _timer.Continue();
+        }
+        tutorialActive = false;
         audioManager.PlayWin();
         _winPopUp.style.display = DisplayStyle.Flex;
         _lvl++;
@@ -168,6 +178,12 @@ public class GameManager : MonoBehaviour
             _helpNrLabel.parent.parent.Q<VisualElement>("ads").style.display = DisplayStyle.None;
             _helpNrLabel.parent.style.display = DisplayStyle.Flex;
         }
+    }
+    
+    private async void TutorialStep()
+    {
+        await Task.Delay(100);
+        _boardManager.TutorialStep();
     }
     
     private void Clear()

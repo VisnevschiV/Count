@@ -77,10 +77,15 @@ public class BoardManager : MonoBehaviour
             _placedNumbersPositions.Push(buttonIndex);
             txt.text = numberToBePlaced.ToString();
             txt.AddToClassList("confirmedNr");
-
+            
             if (numberToBePlaced == _finalNr && NoDoubleNumbers())
             {
                 gameManager.Win();
+            }
+
+            if (gameManager.tutorialActive)
+            {
+                TutorialStep();
             }
         }
     }
@@ -166,6 +171,27 @@ public class BoardManager : MonoBehaviour
                 }
 
                 local.RemoveAt(index); // Remove the checked position
+            }
+        }
+    }
+
+    public void TutorialStep()
+    {
+        if (_visited.Count > 0)
+        {
+            int nextNumber = _placedNumbersPositions.Count + 1;
+
+            foreach (Vector2 pos in _visited)
+            {
+                Label label = _board[(int)pos.x, (int)pos.y].Q<Label>();
+
+                if (string.IsNullOrEmpty(label.text) && _int_board[(int)pos.x, (int)pos.y] == nextNumber)
+                {
+                    label.text = nextNumber.ToString();
+                    label.AddToClassList("required");
+                    _visited.Remove(pos);
+                    return;
+                }
             }
         }
     }

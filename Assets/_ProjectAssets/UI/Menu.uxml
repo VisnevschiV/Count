@@ -8,7 +8,6 @@
             <engine:Label text="Label" name="record" style="font-size: 71px; color: rgba(231, 231, 231, 0.79); -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=18e088599eef64a6b90126f9890e897f&amp;type=3#NotInter-Regular&quot;);" />
             <engine:Button text="Competitive" name="Play" style="width: 587px;" />
             <engine:Button text="Practice" name="practiceButton" style="width: 465px;" />
-            <engine:Button text="How To " name="HowTo" />
         </engine:VisualElement>
         <engine:VisualElement name="practice" style="flex-grow: 1; height: 60%; align-items: center; justify-content: center; display: none;">
             <engine:Button text="Easy" name="easy" class="unavailableButton">
@@ -25,10 +24,5 @@
             </engine:Button>
             <engine:Button name="home" style="width: 217px; background-image: url(&quot;project://database/Assets/_ProjectAssets/T/arrow.png?fileID=2800000&amp;guid=4ffe005c60ceed74eb1c4973d593cbfe&amp;type=3#arrow&quot;); background-size: 50% 50%;" />
         </engine:VisualElement>
-    </engine:VisualElement>
-    <engine:VisualElement name="tutorialWindow" style="display: none; background-color: rgb(90, 87, 102);">
-        <engine:VisualElement name="img" style="width: 850px; height: 850px; margin-top: 177px; margin-right: 177px; margin-bottom: 177px; margin-left: 177px; background-image: url(&quot;project://database/Assets/_ProjectAssets/T/Tutorial1.png?fileID=2800000&amp;guid=2b3eb5b28e26f47c1a3db36ac86e892f&amp;type=3#Tutorial1&quot;);" />
-        <engine:Label text="Label" style="font-size: 81px; -unity-font-style: bold; color: rgb(0, 0, 0); white-space: normal; -unity-text-align: middle-center; margin-top: 28px; margin-right: 28px; margin-bottom: 28px; margin-left: 28px; padding-top: 27px; padding-right: 27px; padding-bottom: 27px; padding-left: 217%;" />
-        <engine:Button text="Next" name="Next" />
     </engine:VisualElement>
 </engine:UXML>

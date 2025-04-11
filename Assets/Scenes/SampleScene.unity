@@ -314,8 +314,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiDocument: {fileID: 250738892}
   game: {fileID: 472645991}
-  tutorialData: {fileID: 11400000, guid: ba952374dcfc54193bc738e9e311c08d, type: 2}
-  click: {fileID: 56270792}
 --- !u!1 &380411414
 GameObject:
   m_ObjectHideFlags: 0
@@ -361,7 +359,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 380411414}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!114 &380411417
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -26,8 +26,6 @@ public class Menu : MonoBehaviour
         rootVisualElement.Q<Button>("Play").clicked += PlayCompetitive;
         rootVisualElement.Q<Button>("practiceButton").clicked += Practice;
         rootVisualElement.Q<Button>("Play").clicked += PlayClick;
-        rootVisualElement.Q<Button>("HowTo").clicked += PlayClick;
-        rootVisualElement.Q<Button>("Next").clicked += PlayClick;
         rootVisualElement.Q<Button>("home").clicked += Home;
 
         rootVisualElement.Q<Label>("record").text = "High Score: " +

@@ -13,6 +13,8 @@ public class BoardManager : MonoBehaviour
     public AudioManager audioManager;
     public GameManager gameManager;
 
+    
+
     private int _boardSize = 3;
 
     private VisualElement _rootVisualElement;
@@ -150,30 +152,80 @@ public class BoardManager : MonoBehaviour
 
     public void Help()
     {
-
-        if (_hintPositions.Count > 0)
+        // Check if there are any placed numbers
+        if (_placedNumbersPositions.Count == 0)
         {
-            List<Vector2> local = new List<Vector2>(_hintPositions); // Copy _visited to avoid modifying while iterating
+            Debug.Log("No numbers placed yet. Cannot provide a hint.");
+            return;
+        }
 
-            while (local.Count > 0)
+        // Get the player's current position and the next number to place
+        Vector2 currentPos = _placedNumbersPositions.Peek();
+        int nextNumber = _placedNumbersPositions.Count + 1;
+
+        Debug.Log($"Current position: {currentPos}, Next number: {nextNumber}");
+
+        // Define possible directions (up, down, left, right)
+        Vector2[] directions = new Vector2[]
+        {
+            new Vector2(1, 0),  // Down
+            new Vector2(-1, 0), // Up
+            new Vector2(0, 1),  // Right
+            new Vector2(0, -1)  // Left
+        };
+
+        // Iterate through all possible moves
+        foreach (Vector2 direction in directions)
+        {
+            Vector2 nextPos = currentPos + direction;
+
+            // Check if the move is within bounds
+            if (nextPos.x >= 0 && nextPos.x < _board.GetLength(0) &&
+                nextPos.y >= 0 && nextPos.y < _board.GetLength(1))
             {
-                int index = Random.Range(0, local.Count); // Pick a random index
-                Vector2 pos = local[index];
+                Label label = _board[(int)nextPos.x, (int)nextPos.y].Q<Label>();
 
-                Label label = _board[(int) pos.x, (int) pos.y].Q<Label>();
+                Debug.Log($"Checking position: {nextPos}");
 
-                // Check if the cell is empty before placing a number
-                if (string.IsNullOrEmpty(label.text))
+                // Check if the cell matches the next number
+                if (_int_board[(int)nextPos.x, (int)nextPos.y] == nextNumber)
                 {
-                    label.text = _int_board[(int) pos.x, (int) pos.y].ToString();
-                    label.AddToClassList("required"); // Mark it as required
-                    _hintPositions.Remove(pos); // Remove from visited since it's now placed
-                    return;
-                }
+                    // If the cell is already marked as "required," highlight it as the hint
+                    if (label.ClassListContains("required"))
+                    {
+                        Debug.Log($"Hint: Required number {nextNumber} is already placed at ({nextPos.x}, {nextPos.y})");
+                        label.AddToClassList("required"); // Ensure it's marked as a hint
+                        return;
+                    }
+                    // Otherwise, simulate placing the number
+                    else if (string.IsNullOrEmpty(label.text))
+                    {
+                        Debug.Log($"Valid move found at {nextPos}");
 
-                local.RemoveAt(index); // Remove the checked position
+                        // Simulate placing the number
+                        label.text = nextNumber.ToString();
+                        _placedNumbersPositions.Push(nextPos);
+
+                        // Check if a path to win exists
+                        if (PathToWinExists(nextPos, nextNumber + 1))
+                        {
+                            // Highlight the hint and undo the simulated move
+                            label.text = nextNumber.ToString();
+                            _placedNumbersPositions.Pop();;
+                            label.AddToClassList("required"); // Mark it as a hint
+                            Debug.Log($"Hint: Place {nextNumber} at ({nextPos.x}, {nextPos.y})");
+                            return;
+                        }
+
+                        // Undo the simulated move
+                        label.text = "";
+                        _placedNumbersPositions.Pop();
+                    }
+                }
             }
         }
+
+        Debug.Log("No valid hint available.");
     }
 
     public void TutorialStep()
@@ -414,5 +466,72 @@ public class BoardManager : MonoBehaviour
         }
 
         return new Vector2(-1, -1);
+    }
+
+    private bool PathToWinExists(Vector2 currentPos, int nextNumber)
+    {
+        // Base case: If the next number is greater than the final number, the path is complete
+        if (nextNumber > _finalNr)
+        {
+            Debug.Log($"Path to win found! Reached final number: {nextNumber}");
+            return true;
+        }
+
+        Vector2[] directions = new Vector2[]
+        {
+            new Vector2(1, 0),  // Down
+            new Vector2(-1, 0), // Up
+            new Vector2(0, 1),  // Right
+            new Vector2(0, -1)  // Left
+        };
+
+        foreach (Vector2 direction in directions)
+        {
+            Vector2 nextPos = currentPos + direction;
+
+            // Check if the move is within bounds
+            if (nextPos.x >= 0 && nextPos.x < _board.GetLength(0) &&
+                nextPos.y >= 0 && nextPos.y < _board.GetLength(1))
+            {
+                Label label = _board[(int)nextPos.x, (int)nextPos.y].Q<Label>();
+
+                // Check if the cell matches the next number
+                if (_int_board[(int)nextPos.x, (int)nextPos.y] == nextNumber)
+                {
+                    // If the cell is already marked as "required," skip simulation
+                    if (label.ClassListContains("required"))
+                    {
+                        Debug.Log($"Required number {nextNumber} found at {nextPos}. Continuing path check.");
+                        if (PathToWinExists(nextPos, nextNumber + 1))
+                        {
+                            return true;
+                        }
+                    }
+                    // Otherwise, simulate placing the number
+                    else if (string.IsNullOrEmpty(label.text))
+                    {
+                        Debug.Log($"Simulating move: Placing {nextNumber} at {nextPos}");
+
+                        // Simulate placing the number
+                        label.text = nextNumber.ToString();
+
+                        // Recursively check if a path exists from this position
+                        if (PathToWinExists(nextPos, nextNumber + 1))
+                        {
+                            Debug.Log($"Path to win exists from {nextPos} with number {nextNumber}");
+                            label.text = ""; // Undo the simulated move
+                            return true;
+                        }
+
+                        // Undo the simulated move
+                        Debug.Log($"Undoing move: Removing {nextNumber} from {nextPos}");
+                        label.text = "";
+                    }
+                }
+            }
+        }
+
+        Debug.Log($"No path to win from {currentPos} with number {nextNumber}");
+        return false; // No valid path found
     }
 }

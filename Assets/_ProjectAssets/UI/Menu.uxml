@@ -7,6 +7,7 @@
         <engine:VisualElement name="buttonWrapper" style="flex-grow: 1; height: 60%; display: flex;">
             <engine:Label text="Label" name="record" style="font-size: 71px; color: rgba(231, 231, 231, 0.79); -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=18e088599eef64a6b90126f9890e897f&amp;type=3#NotInter-Regular&quot;);" />
             <engine:Button text="Competitive" name="Play" style="width: 587px;" />
+            <engine:Button text="Career" name="Career" style="width: 587px;" />
             <engine:Button text="Practice" name="practiceButton" style="width: 465px;" />
         </engine:VisualElement>
         <engine:VisualElement name="practice" style="flex-grow: 1; height: 60%; align-items: center; justify-content: center; display: none;">

@@ -24,6 +24,7 @@ public class Menu : MonoBehaviour
         // Get the root VisualElement of the UI
         VisualElement rootVisualElement = uiDocument.rootVisualElement;
         rootVisualElement.Q<Button>("Play").clicked += PlayCompetitive;
+        rootVisualElement.Q<Button>("Career").clicked += PlayCareer;
         rootVisualElement.Q<Button>("practiceButton").clicked += Practice;
         rootVisualElement.Q<Button>("Play").clicked += PlayClick;
         rootVisualElement.Q<Button>("home").clicked += Home;
@@ -80,6 +81,13 @@ public class Menu : MonoBehaviour
 
     private void PlayCompetitive()
     {
+        game.GetComponent<GameManager>().timerActive = true;
+        game.SetActive(true);
+        gameObject.SetActive(false);
+    }
+
+    private void PlayCareer(){
+        game.GetComponent<GameManager>().timerActive = false;
         game.SetActive(true);
         gameObject.SetActive(false);
     }
@@ -87,6 +95,7 @@ public class Menu : MonoBehaviour
     private void PlayLevel(int lvl)
     {
         game.GetComponent<GameManager>().level = lvl;
+        game.GetComponent<GameManager>().timerActive = false;
         gameObject.SetActive(false);
         game.SetActive(true);
         

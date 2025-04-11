@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     private Timer _timer = new Timer();
     
     public bool tutorialActive = false;
-    
+    public bool timerActive = false;
     
     
     public void OnEnableLate()
@@ -70,9 +70,14 @@ public class GameManager : MonoBehaviour
         StartNewGame();
         if (level == 0)
         {
-            _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 40);
-            _timer.OnTimeExpired += TimeOver;
-            _timer.Stop();
+            if(timerActive){
+                _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 40);
+                _timer.OnTimeExpired += TimeOver;
+                _timer.Stop();
+            }else{
+                _rootVisualElement.Q<Label>("timer").text = "";
+            }
+           
             _lvlLabel.text = "Lvl" + _lvl;
             tutorialActive = true;
             TutorialStep();
@@ -86,13 +91,14 @@ public class GameManager : MonoBehaviour
     
     private void Update()
     {
-        _timer?.Update(Time.deltaTime);
+        if(timerActive)
+            _timer.Update(Time.deltaTime);
     }
     
     [ContextMenu("win")]
     public void Win()
     {
-        if (tutorialActive)
+        if (tutorialActive && timerActive)
         {
             _timer.Continue();
         }
@@ -105,16 +111,17 @@ public class GameManager : MonoBehaviour
             _lvlLabel.text = "Lvl" + _lvl;
         }
 
-        _timer.AddTime(10);
-        if (_lvl>10)
-        {
-            _timer.AddTime(5);
+        if(timerActive){
+            _timer.AddTime(10);
+            if (_lvl>10)
+            {
+                _timer.AddTime(5);
+            }
+            if (_lvl>15)
+            {
+                _timer.AddTime(5);
+            }
         }
-        if (_lvl>15)
-        {
-            _timer.AddTime(5);
-        }
-        
     }
     
     private void Home()
@@ -132,6 +139,8 @@ public class GameManager : MonoBehaviour
 
     private void ContinueGame()
     {
+        if(!timerActive)
+            return;
         if (_timer.remainingTime<1)
         {
             _timer.StartCountDown(_rootVisualElement.Q<Label>("timer"), 20);

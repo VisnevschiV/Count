@@ -27,6 +27,7 @@ public class BoardManager : MonoBehaviour
     private Vector2 _lastClicked = new Vector2(-1, -1);
     private Stack<Vector2> _placedNumbersPositions = new Stack<Vector2>();
     private List<Vector2> _hintPositions = new List<Vector2>();
+    private PathFinder _pathFinder;
 
 
     private void OnEnable()
@@ -43,28 +44,19 @@ public class BoardManager : MonoBehaviour
 
         _playArea = _rootVisualElement.Q<VisualElement>("playArea");
         gameManager.OnEnableLate();
+        
     }
 
 
     // Method to handle button click events
     private void OnButtonClick(VisualElement button)
     {
-        audioManager.PlayClick();
         Vector2 buttonIndex = GetIndexOf(_board, button);
         int numberToBePlaced = _placedNumbersPositions.Count + 1;
-        Label txt = button.Q<Label>();
-
-
-        // Undo move
-        if (_placedNumbersPositions.Count > 0 && buttonIndex == _placedNumbersPositions.Peek() && gameManager.level != 0)
-        {
-            RemoveNumber(txt);
-            return;
-        }
-
+        Label label = button.Q<Label>();
 
         // Check if the text is a valid integer
-        bool placeHasANumber = int.TryParse(txt.text, out int placeNumber);
+        bool placeHasANumber = int.TryParse(label.text, out int placeNumber);
         bool isInitialHit = _placedNumbersPositions.Count == 0;
         Vector2 lastClicked = isInitialHit ? new Vector2(-1, -1) : _placedNumbersPositions.Peek();
 
@@ -73,14 +65,15 @@ public class BoardManager : MonoBehaviour
                           lastClicked.x == buttonIndex.x && Mathf.Abs(lastClicked.y - buttonIndex.y) == 1;
 
 
-        if (isInitialHit || //first nr
-            (placeHasANumber && placeNumber == numberToBePlaced && isAdjacent) || //place a required nr
-            (!placeHasANumber && isAdjacent)) //place a nr
+        if (isInitialHit || // First number
+            (isAdjacent && placeHasANumber && placeNumber == numberToBePlaced) || // Place a required number
+            (!placeHasANumber && isAdjacent)) // Place a number
         {
+            audioManager.PlayClick();
             _placedNumbersPositions.Push(buttonIndex);
-            txt.text = numberToBePlaced.ToString();
-            txt.AddToClassList("confirmedNr");
-            
+            label.text = numberToBePlaced.ToString();
+            label.AddToClassList("confirmedNr");
+
             if (numberToBePlaced == _finalNr && NoDoubleNumbers())
             {
                 gameManager.Win();
@@ -90,6 +83,8 @@ public class BoardManager : MonoBehaviour
             {
                 TutorialStep();
             }
+
+            
         }
     }
 
@@ -149,7 +144,12 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    private void InitializePathFinder()
+    {
+        _pathFinder = new PathFinder(_board, _int_board, _finalNr);
+    }
 
+    
     public void Help()
     {
         // Check if there are any placed numbers
@@ -165,67 +165,9 @@ public class BoardManager : MonoBehaviour
 
         Debug.Log($"Current position: {currentPos}, Next number: {nextNumber}");
 
-        // Define possible directions (up, down, left, right)
-        Vector2[] directions = new Vector2[]
-        {
-            new Vector2(1, 0),  // Down
-            new Vector2(-1, 0), // Up
-            new Vector2(0, 1),  // Right
-            new Vector2(0, -1)  // Left
-        };
-
-        // Iterate through all possible moves
-        foreach (Vector2 direction in directions)
-        {
-            Vector2 nextPos = currentPos + direction;
-
-            // Check if the move is within bounds
-            if (nextPos.x >= 0 && nextPos.x < _board.GetLength(0) &&
-                nextPos.y >= 0 && nextPos.y < _board.GetLength(1))
-            {
-                Label label = _board[(int)nextPos.x, (int)nextPos.y].Q<Label>();
-
-                Debug.Log($"Checking position: {nextPos}");
-
-                // Check if the cell matches the next number
-                if (_int_board[(int)nextPos.x, (int)nextPos.y] == nextNumber)
-                {
-                    // If the cell is already marked as "required," highlight it as the hint
-                    if (label.ClassListContains("required"))
-                    {
-                        Debug.Log($"Hint: Required number {nextNumber} is already placed at ({nextPos.x}, {nextPos.y})");
-                        label.AddToClassList("required"); // Ensure it's marked as a hint
-                        return;
-                    }
-                    // Otherwise, simulate placing the number
-                    else if (string.IsNullOrEmpty(label.text))
-                    {
-                        Debug.Log($"Valid move found at {nextPos}");
-
-                        // Simulate placing the number
-                        label.text = nextNumber.ToString();
-                        _placedNumbersPositions.Push(nextPos);
-
-                        // Check if a path to win exists
-                        if (PathToWinExists(nextPos, nextNumber + 1))
-                        {
-                            // Highlight the hint and undo the simulated move
-                            label.text = nextNumber.ToString();
-                            _placedNumbersPositions.Pop();;
-                            label.AddToClassList("required"); // Mark it as a hint
-                            Debug.Log($"Hint: Place {nextNumber} at ({nextPos.x}, {nextPos.y})");
-                            return;
-                        }
-
-                        // Undo the simulated move
-                        label.text = "";
-                        _placedNumbersPositions.Pop();
-                    }
-                }
-            }
-        }
-
-        Debug.Log("No valid hint available.");
+        // Use the PathFinder to check for a valid path
+        _pathFinder.FindPath(_int_board);
+        
     }
 
     public void TutorialStep()
@@ -323,6 +265,7 @@ public class BoardManager : MonoBehaviour
         }
 
         ReadBoard(rows, cols);
+        InitializePathFinder();
     }
 
 
@@ -337,40 +280,65 @@ public class BoardManager : MonoBehaviour
     {
         ClearBoard();
 
-        int rows = _board.GetLength(0);
-        int cols = _board.GetLength(1);
+        // Step 1: Initialize board data
+        InitializeBoardData(out int rows, out int cols, out int minSteps, out int maxNumbers, out Vector2[] directions);
+
+        // Step 2: Generate start and end positions
+        Vector2 start, end;
+        GenerateStartAndEndPositions(rows, cols, out start, out end);
+
+        // Step 3: Generate a valid path
+        if (!GeneratePath(start, end, rows, cols, directions, minSteps, maxNumbers))
+        {
+            FillBoardWithNumbers(); // Retry generation if path is invalid
+            return;
+        }
+
+        // Step 4: Place required numbers
+        PlaceRequiredNumbers();
+    }
+
+    private void InitializeBoardData(out int rows, out int cols, out int minSteps, out int maxNumbers, out Vector2[] directions)
+    {
+        rows = _board.GetLength(0);
+        cols = _board.GetLength(1);
         _int_board = new int[rows, cols];
-        _hintPositions.Clear(); // Ensure it's fresh
+        _hintPositions.Clear();
 
-        int minSteps = rows * cols - Random.Range(1, 4);
-        int maxNumbers = _boardSize * _boardSize;
+        minSteps = rows * cols - Random.Range(1, 4);
+        maxNumbers = _boardSize * _boardSize;
 
-        Vector2[] directions = new Vector2[]
+        directions = new Vector2[]
         {
             new Vector2(1, 0), // Down
             new Vector2(-1, 0), // Up
             new Vector2(0, 1), // Right
             new Vector2(0, -1) // Left
         };
+    }
 
-        Vector2 start, end;
+    private void GenerateStartAndEndPositions(int rows, int cols, out Vector2 start, out Vector2 end)
+    {
         do
         {
             start = GetRandomPosition(rows, cols);
             end = GetRandomPosition(rows, cols);
         } while (start == end);
+    }
 
-        HashSet<Vector2> visited = new HashSet<Vector2> {start};
+    private bool GeneratePath(Vector2 start, Vector2 end, int rows, int cols, Vector2[] directions, int minSteps, int maxNumbers)
+    {
+        HashSet<Vector2> visited = new HashSet<Vector2> { start };
         Vector2 currentPos = start;
         int currentNumber = 1, stepCount = 0;
 
         while ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
         {
-            _int_board[(int) currentPos.x, (int) currentPos.y] = currentNumber++;
-            _hintPositions.Add(currentPos); // ✅ Ensure positions are stored
+            _int_board[(int)currentPos.x, (int)currentPos.y] = currentNumber++;
+            _hintPositions.Add(currentPos);
 
             List<Vector2> validMoves = GetValidMoves(currentPos, directions, rows, cols, visited);
-            if (validMoves.Count == 0) break;
+            if (validMoves.Count == 0) return false;
 
             currentPos = validMoves.OrderBy(move =>
                 Random.Range(0, 2) == 0 ? Vector2.Distance(move, end) : Random.Range(0, 100)).First();
@@ -379,17 +347,20 @@ public class BoardManager : MonoBehaviour
             stepCount++;
         }
 
-        if ((currentPos != end || stepCount < minSteps) && currentNumber <= maxNumbers)
-        {
-            FillBoardWithNumbers(); // Retry generation
-            return;
-        }
+        return ValidatePath(currentPos, end, stepCount, minSteps);
+    }
 
-        // Ensure the last required number is placed
+    private bool ValidatePath(Vector2 currentPos, Vector2 end, int stepCount, int minSteps)
+    {
+        return currentPos == end && stepCount >= minSteps;
+    }
+
+    private void PlaceRequiredNumbers()
+    {
         if (_hintPositions.Count > 1)
         {
             RequireNumber(_hintPositions.Last());
-            _finalNr = _int_board[(int) _hintPositions.Last().x, (int) _hintPositions.Last().y];
+            _finalNr = _int_board[(int)_hintPositions.Last().x, (int)_hintPositions.Last().y];
             _hintPositions.RemoveAt(_hintPositions.Count - 1);
         }
 
@@ -466,72 +437,5 @@ public class BoardManager : MonoBehaviour
         }
 
         return new Vector2(-1, -1);
-    }
-
-    private bool PathToWinExists(Vector2 currentPos, int nextNumber)
-    {
-        // Base case: If the next number is greater than the final number, the path is complete
-        if (nextNumber > _finalNr)
-        {
-            Debug.Log($"Path to win found! Reached final number: {nextNumber}");
-            return true;
-        }
-
-        Vector2[] directions = new Vector2[]
-        {
-            new Vector2(1, 0),  // Down
-            new Vector2(-1, 0), // Up
-            new Vector2(0, 1),  // Right
-            new Vector2(0, -1)  // Left
-        };
-
-        foreach (Vector2 direction in directions)
-        {
-            Vector2 nextPos = currentPos + direction;
-
-            // Check if the move is within bounds
-            if (nextPos.x >= 0 && nextPos.x < _board.GetLength(0) &&
-                nextPos.y >= 0 && nextPos.y < _board.GetLength(1))
-            {
-                Label label = _board[(int)nextPos.x, (int)nextPos.y].Q<Label>();
-
-                // Check if the cell matches the next number
-                if (_int_board[(int)nextPos.x, (int)nextPos.y] == nextNumber)
-                {
-                    // If the cell is already marked as "required," skip simulation
-                    if (label.ClassListContains("required"))
-                    {
-                        Debug.Log($"Required number {nextNumber} found at {nextPos}. Continuing path check.");
-                        if (PathToWinExists(nextPos, nextNumber + 1))
-                        {
-                            return true;
-                        }
-                    }
-                    // Otherwise, simulate placing the number
-                    else if (string.IsNullOrEmpty(label.text))
-                    {
-                        Debug.Log($"Simulating move: Placing {nextNumber} at {nextPos}");
-
-                        // Simulate placing the number
-                        label.text = nextNumber.ToString();
-
-                        // Recursively check if a path exists from this position
-                        if (PathToWinExists(nextPos, nextNumber + 1))
-                        {
-                            Debug.Log($"Path to win exists from {nextPos} with number {nextNumber}");
-                            label.text = ""; // Undo the simulated move
-                            return true;
-                        }
-
-                        // Undo the simulated move
-                        Debug.Log($"Undoing move: Removing {nextNumber} from {nextPos}");
-                        label.text = "";
-                    }
-                }
-            }
-        }
-
-        Debug.Log($"No path to win from {currentPos} with number {nextNumber}");
-        return false; // No valid path found
     }
 }

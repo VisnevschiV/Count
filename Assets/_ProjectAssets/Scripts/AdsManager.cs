@@ -7,7 +7,6 @@ public enum AdType
 {
     Clear,
     Help,
-
     Systematic
 }
 
@@ -16,6 +15,8 @@ public class AdsManager : MonoBehaviour
 
     public static Action onPlayerWarchedClearAd;
     public static Action onPlayerWatchedDoubleMoneyAd;
+
+    public static Action onPlayerWatchedSystematicAd;
 
     void Awake()
     {

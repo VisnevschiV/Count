@@ -7,9 +7,14 @@ public class GameManager : MonoBehaviour
 {
     public UIDocument uiDocument;
     public AudioManager audioManager;
+
+    public AdsManager adsManager;
     public GameObject menu;
 
     public int level = 0;
+
+    public int showAdAtEachXLevels = 5;
+    private int _levelsSinceLastAd = 0;
     
     [SerializeField]
     private BoardManager _boardManager;
@@ -87,6 +92,8 @@ public class GameManager : MonoBehaviour
             _rootVisualElement.Q<Label>("timer").text = "";
             _lvlLabel.text = "";
         }
+        AdsManager.onPlayerWarchedClearAd += RefillClears;
+        AdsManager.onPlayerWatchedDoubleMoneyAd += SystematicAdWathced;
     }
     
     private void Update()
@@ -98,6 +105,7 @@ public class GameManager : MonoBehaviour
     [ContextMenu("win")]
     public void Win()
     {
+        SystematicAdCheck();
         if (tutorialActive && timerActive)
         {
             _timer.Continue();
@@ -189,6 +197,24 @@ public class GameManager : MonoBehaviour
         }
     }
     
+    private void SystematicAdCheck(){
+
+        _levelsSinceLastAd++;
+        if (_levelsSinceLastAd >= showAdAtEachXLevels)
+        {
+            _timer.Stop();
+            AdsManager.ShowRewardedAd(AdType.Systematic);
+            
+        }
+    }
+
+    private void SystematicAdWathced(){
+        if (tutorialActive && timerActive)
+        {
+            _timer.Continue();
+        }
+        _levelsSinceLastAd = 0;
+    }
     private async void TutorialStep()
     {
         await Task.Delay(100);
@@ -212,11 +238,15 @@ public class GameManager : MonoBehaviour
             }
         }else if (_clearAvailable == 0)
         {
-           _clearAvailable = 3;
-           _clearNrLabel.text = _clearAvailable.ToString();
-           _clearNrLabel.parent.parent.Q<VisualElement>("ads").style.display = DisplayStyle.None;
-           _clearNrLabel.parent.style.display = DisplayStyle.Flex;
+            AdsManager.ShowRewardedAd(AdType.Clear);
         }
+    }
+
+    private void RefillClears(){
+        _clearAvailable = 3;
+        _clearNrLabel.text = _clearAvailable.ToString();
+        _clearNrLabel.parent.parent.Q<VisualElement>("ads").style.display = DisplayStyle.None;
+        _clearNrLabel.parent.style.display = DisplayStyle.Flex;
     }
     
     private async void StartNewGame()

@@ -518,6 +518,7 @@ GameObject:
   - component: {fileID: 472645992}
   - component: {fileID: 472645994}
   - component: {fileID: 472645995}
+  - component: {fileID: 472645996}
   m_Layer: 0
   m_Name: GameUI
   m_TagString: Untagged
@@ -588,10 +589,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiDocument: {fileID: 472645992}
   audioManager: {fileID: 380411417}
+  adsManager: {fileID: 472645996}
   menu: {fileID: 250738890}
   level: 0
+  showAdAtEachXLevels: 5
   _boardManager: {fileID: 472645994}
   tutorialActive: 0
+  timerActive: 0
+--- !u!114 &472645996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472645991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7420876f0cf2a1e408df3d5dceffce20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1350582916
 GameObject:
   m_ObjectHideFlags: 0

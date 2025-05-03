@@ -83,8 +83,6 @@ public class BoardManager : MonoBehaviour
             {
                 TutorialStep();
             }
-
-            
         }
     }
 
